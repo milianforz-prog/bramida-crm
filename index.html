@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="fonts/fonts.css?v=2">
+<link rel="stylesheet" href="fonts/fonts.css?v=3">
 <style>
 /* Layout: graphite sidebar (desktop) / bottom tab bar (phone) + one working column up to 1180px. Garage-night graphite frames the app; road-marking yellow is the single action colour; status colours carry meaning only. */
 :root{
@@ -555,13 +555,13 @@ body.signed-out .auth{display:flex}
 <div id="toast" role="status"></div>
 <div id="pdf-stage" aria-hidden="true"></div>
 
-<script src="vendor/supabase.js?v=2"></script>
+<script src="vendor/supabase.js?v=3"></script>
 <script>
 (() => {
 'use strict';
 const SCHEMA_SVG = "<svg width='760' height='752' viewBox='0 0 760 752' xmlns='http://www.w3.org/2000/svg' font-family=\"Onest, Arial, sans-serif\"><text x='24' y='34' font-size='15' font-weight='600' fill='#111111' text-anchor='start'>Схема осмотра: повреждения отмечаются кодом в зоне кузова</text><text x='24' y='56' font-size='11.5' font-weight='400' fill='#666666' text-anchor='start'>Вид сверху, перед автомобиля — вверху. Левая схема — при передаче, правая — при возврате.</text><line x1='380' y1='76' x2='380' y2='464' stroke='#cfcfcf'/><rect x='150' y='220' width='88' height='30' fill='#ececec'/><rect x='150' y='330' width='88' height='26' fill='#ececec'/><rect x='124' y='120' width='140' height='320' rx='30' fill='none' stroke='#6b6b6b' stroke-width='1.25'/><path d='M124 144H264M124 416H264M150 144V416M238 144V416M150 220H238M150 250H238M150 330H238M150 356H238M124 230H150M124 300H150M124 370H150M238 230H264M238 300H264M238 370H264' fill='none' stroke='#6b6b6b' stroke-width='1'/><rect x='114' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='114' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='106' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><text x='194' y='90' font-size='13' font-weight='600' fill='#111111' text-anchor='middle'>При передаче</text><text x='194' y='112' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>перед</text><text x='194' y='460' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>зад</text><text x='194' y='136' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>1</text><text x='194' y='186' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>2</text><text x='194' y='239' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>3</text><text x='194' y='294' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>4</text><text x='194' y='347' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>5</text><text x='194' y='390' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>6</text><text x='194' y='432' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>7</text><text x='137' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>8</text><text x='137' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>9</text><text x='137' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>10</text><text x='137' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>11</text><text x='251' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>12</text><text x='251' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>13</text><text x='251' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>14</text><text x='251' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>15</text><text x='108' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>16</text><text x='280' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17</text><text x='108' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>18</text><text x='280' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19</text><text x='100' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>20</text><text x='288' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21</text><rect x='522' y='220' width='88' height='30' fill='#ececec'/><rect x='522' y='330' width='88' height='26' fill='#ececec'/><rect x='496' y='120' width='140' height='320' rx='30' fill='none' stroke='#6b6b6b' stroke-width='1.25'/><path d='M496 144H636M496 416H636M522 144V416M610 144V416M522 220H610M522 250H610M522 330H610M522 356H610M496 230H522M496 300H522M496 370H522M610 230H636M610 300H636M610 370H636' fill='none' stroke='#6b6b6b' stroke-width='1'/><rect x='486' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='486' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='478' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><text x='566' y='90' font-size='13' font-weight='600' fill='#111111' text-anchor='middle'>При возврате</text><text x='566' y='112' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>перед</text><text x='566' y='460' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>зад</text><text x='566' y='136' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>1</text><text x='566' y='186' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>2</text><text x='566' y='239' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>3</text><text x='566' y='294' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>4</text><text x='566' y='347' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>5</text><text x='566' y='390' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>6</text><text x='566' y='432' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>7</text><text x='509' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>8</text><text x='509' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>9</text><text x='509' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>10</text><text x='509' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>11</text><text x='623' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>12</text><text x='623' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>13</text><text x='623' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>14</text><text x='623' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>15</text><text x='480' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>16</text><text x='652' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17</text><text x='480' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>18</text><text x='652' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19</text><text x='472' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>20</text><text x='660' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21</text><text x='24' y='500' font-size='13' font-weight='600' fill='#111111' text-anchor='start'>Зоны осмотра</text><text x='24' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>1 — передний бампер, фары</text><text x='24' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>2 — капот</text><text x='24' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>3 — лобовое стекло</text><text x='24' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>4 — крыша</text><text x='24' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>5 — заднее стекло</text><text x='24' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>6 — крышка багажника</text><text x='24' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>7 — задний бампер, фонари</text><text x='264' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>8 — левое переднее крыло</text><text x='264' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>9 — левая передняя дверь</text><text x='264' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>10 — левая задняя дверь</text><text x='264' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>11 — левое заднее крыло</text><text x='264' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>12 — правое переднее крыло</text><text x='264' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>13 — правая передняя дверь</text><text x='264' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>14 — правая задняя дверь</text><text x='504' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>15 — правое заднее крыло</text><text x='504' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>16 — левое переднее колесо, диск</text><text x='504' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17 — правое переднее колесо, диск</text><text x='504' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>18 — левое заднее колесо, диск</text><text x='504' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19 — правое заднее колесо, диск</text><text x='504' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>20 — левое зеркало</text><text x='504' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21 — правое зеркало</text><text x='24' y='680' font-size='13' font-weight='600' fill='#111111' text-anchor='start'>Обозначения повреждений</text><text x='24' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Ц — царапина</text><text x='150' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>С — скол</text><text x='250' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>В — вмятина</text><text x='370' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Т — трещина</text><text x='490' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Д — другое (описать в таблице)</text><text x='24' y='728' font-size='11.5' font-weight='400' fill='#666666' text-anchor='start'>Рядом с кодом укажите размер, например «Ц 5 см», и внесите повреждение в таблицу под схемой.</text></svg>";
 const SCHEMA_IMG = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SCHEMA_SVG);
-const PDF_LIB = 'vendor/html2pdf.bundle.min.js?v=2';
+const PDF_LIB = 'vendor/html2pdf.bundle.min.js?v=3';
 
 /* ---------------- icons ---------------- */
 const IC = {
@@ -594,6 +594,7 @@ const IC = {
   phone: '<path d="M5.2 4h3.4l1.7 4.3-2.2 1.4a11 11 0 0 0 6.2 6.2l1.4-2.2L20 15.4v3.4a1.6 1.6 0 0 1-1.7 1.6C10.5 20 4 13.5 3.6 5.7A1.6 1.6 0 0 1 5.2 4z"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
   fleet: '<path d="M3 12h18"/><circle cx="12" cy="12" r="8.5"/>',
+  bank: '<path d="M3.5 9.5 12 4l8.5 5.5"/><path d="M5.5 10.5v6.5M10 10.5v6.5M14 10.5v6.5M18.5 10.5v6.5M3.5 20h17"/>',
   minus: '<path d="M5 12h14"/>',
   logout: '<path d="M14 4.5h3.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H14"/><path d="M10 16.5 5.5 12 10 7.5M5.5 12H15"/>',
   share: '<path d="M12 3.5v11M8 7.5l4-4 4 4"/><path d="M6 11.5H5.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h13a1.5 1.5 0 0 0 1.5-1.5v-6a1.5 1.5 0 0 0-1.5-1.5H18"/>',
@@ -639,13 +640,13 @@ const rid = () => Math.random().toString(36).slice(2, 10);
 
 /* ---------------- state ---------------- */
 const S = {
-  cars: {}, clients: {}, bookings: {}, payments: {}, tasks: {}, expenses: {}, settings: {},
+  cars: {}, clients: {}, bookings: {}, payments: {}, tasks: {}, expenses: {}, leases: {}, settings: {},
   loaded: new Set(), dbState: 'pending', canWrite: true, meId: null, meName: '',
   db: null, user: null, view: 'today',
   calStart: null, q: { bk: '', cl: '' }, bkFilter: 'active', tkFilter: 'open',
   moneyMonth: null, setDirty: false, setStale: false, people: {}
 };
-const COLLS = ['cars', 'clients', 'bookings', 'payments', 'tasks', 'expenses'];
+const COLLS = ['cars', 'clients', 'bookings', 'payments', 'tasks', 'expenses', 'leases'];
 const ST = { request: 'Заявка', confirmed: 'Подтверждена', issued: 'Выдана', returned: 'Возвращена', closed: 'Закрыта', cancelled: 'Отменена' };
 const FLOW = ['request', 'confirmed', 'issued', 'returned', 'closed'];
 const ACTIVE = ['request', 'confirmed', 'issued', 'returned'];
@@ -654,11 +655,11 @@ const METHODS = ['Наличные', 'Перевод на счёт', 'Карта
 const CHARGE_T = ['Штраф ПДД', 'Обработка штрафа', 'Ущерб / повреждения', 'Мойка', 'Химчистка', 'Перепробег', 'Недозаряд', 'Просрочка возврата', 'Эвакуация', 'Доп. сутки', 'Другое'];
 const SOURCES = ['Авито', 'Звонок', 'Telegram', 'WhatsApp', 'Сайт', 'Повторный клиент', 'Рекомендация', 'Другое'];
 const TASK_T = ['Мойка', 'Зарядка', 'ТО', 'Ремонт', 'Шины', 'Документы', 'Звонок клиенту', 'Другое'];
-const EXP_T = ['Мойка', 'Зарядка', 'Химчистка', 'ТО и ремонт', 'Шины', 'Страховка', 'Штрафы за свой счёт', 'Парковка', 'Реклама', 'Другое'];
-const EXP_IC = { 'Мойка': 'drop', 'Зарядка': 'bolt', 'Химчистка': 'drop', 'Страховка': 'shield', 'Реклама': 'trend' };
+const EXP_T = ['Мойка', 'Зарядка', 'Химчистка', 'ТО и ремонт', 'Шины', 'Страховка', 'Лизинг', 'Штрафы за свой счёт', 'Парковка', 'Реклама', 'Другое'];
+const EXP_IC = { 'Мойка': 'drop', 'Зарядка': 'bolt', 'Химчистка': 'drop', 'Страховка': 'shield', 'Реклама': 'trend', 'Лизинг': 'bank' };
 const NAV = [
   ['today', 'Сегодня', 'today'], ['calendar', 'Календарь', 'calendar'], ['bookings', 'Брони', 'key'], ['clients', 'Клиенты', 'users'],
-  ['cars', 'Автопарк', 'car'], ['money', 'Деньги', 'wallet'], ['tasks', 'Задачи', 'tasks'], ['settings', 'Настройки', 'settings']
+  ['cars', 'Автопарк', 'car'], ['money', 'Деньги', 'wallet'], ['leasing', 'Лизинг', 'bank'], ['tasks', 'Задачи', 'tasks'], ['settings', 'Настройки', 'settings']
 ];
 const TAB_MAIN = ['today', 'calendar', 'bookings', 'money'];
 
@@ -773,7 +774,7 @@ function suggestions(b) {
 }
 
 /* ---------------- alerts ---------------- */
-const TAG_IC = { 'Просрочка': 'alert', 'Сегодня': 'clock', 'Завтра': 'clock', 'Залог': 'lock', 'Долг': 'ruble', 'Оплата': 'ruble', 'Страховка': 'shield', 'Задача': 'tasks', 'Заявка': 'key', 'Закрыть': 'check', 'Выдача': 'key', 'Стоп-лист': 'alert', 'Бронь': 'calendar' };
+const TAG_IC = { 'Просрочка': 'alert', 'Сегодня': 'clock', 'Завтра': 'clock', 'Залог': 'lock', 'Долг': 'ruble', 'Оплата': 'ruble', 'Страховка': 'shield', 'Задача': 'tasks', 'Заявка': 'key', 'Закрыть': 'check', 'Выдача': 'key', 'Стоп-лист': 'alert', 'Бронь': 'calendar', 'Лизинг': 'bank' };
 function buildAlerts() {
   const now = new Date(), t0 = sod(now), t2 = addDays(t0, 2);
   const A = [];
@@ -818,6 +819,15 @@ function buildAlerts() {
     const sub = [t.type, car && car.plate].filter(Boolean).join(' · ');
     if (d < t0) push(1, 'Задача', t.title || 'Задача', `${sub ? sub + ' · ' : ''}просрочена с ${fmtD(t.due)}`, 'open-task', t.id, +d);
     else if (d < addDays(t0, 1)) push(2, 'Задача', t.title || 'Задача', `${sub ? sub + ' · ' : ''}на сегодня`, 'open-task', t.id, +d);
+  });
+  list('leases').forEach(l => {
+    const car = S.cars[l.carId];
+    leaseRows(l, 1).forEach(r => {
+      if (r.status === 'paid') return;
+      const sub = `${car ? car.plate || carLabel(car) : (l.lessor || 'Лизинг')} · за ${ymLabel(r.ym).toLowerCase()}`;
+      if (r.status === 'overdue') push(0, 'Лизинг', `Не оплачен лизинг ${rub(r.left)}`, `${sub} · срок был ${fmtD(isoD(r.due))}`, 'lease-go', l.id, +r.due);
+      else if ((r.due - now) / 864e5 <= 5) push(1, 'Лизинг', `Лизинг ${rub(r.left)} — ${relDay(r.due)}, ${dayMonth(r.due)}`, sub, 'lease-go', l.id, +r.due);
+    });
   });
   return A.sort((a, b) => a.sev - b.sev || a.at - b.at);
 }
@@ -1243,6 +1253,124 @@ VIEWS.money = {
       </div>`;
   }
 };
+
+/* ---------------- Лизинг ---------------- */
+const ymOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+const ymAdd = (ym, n) => { const [y, m] = ym.split('-').map(Number); return ymOf(new Date(y, m - 1 + n, 1)); };
+const ymDiff = (a, b) => { const [y1, m1] = a.split('-').map(Number), [y2, m2] = b.split('-').map(Number); return (y2 - y1) * 12 + (m2 - m1); };
+const ymLabel = ym => { const [y, m] = ym.split('-').map(Number); return MONTHS_N[m - 1] + ' ' + y; };
+const dayMonth = d => `${d.getDate()} ${MONTHS_G[d.getMonth()]}`;
+function inDays(d) {
+  const n = Math.round((sod(d) - sod(new Date())) / 864e5);
+  if (n === 0) return 'сегодня';
+  if (n === 1) return 'завтра';
+  return n > 0 ? `через ${n} ${plural(n, ['день', 'дня', 'дней'])}` : `просрочен на ${-n} ${plural(-n, ['день', 'дня', 'дней'])}`;
+}
+function leaseDue(l, ym) { const [y, m] = ym.split('-').map(Number); const last = new Date(y, m, 0).getDate(); return new Date(y, m - 1, Math.min(Math.max(1, num(l.day) || 1), last), 12, 0); }
+const leaseLastYm = l => (l.first && num(l.term)) ? ymAdd(l.first, num(l.term) - 1) : null;
+const leaseTitle = l => { const car = S.cars[l.carId]; return car ? carLabel(car) : (l.lessor || 'Лизинг'); };
+/* the payment schedule: from the first payment to a few months ahead (or the end of the term) */
+function leaseRows(l, horizon = 3) {
+  if (!/^\d{4}-\d{2}$/.test(l.first || '')) return [];
+  const now = new Date(), t0 = sod(now), last = leaseLastYm(l);
+  let end = ymAdd(ymOf(now), horizon);
+  if (last && ymDiff(last, end) > 0) end = last;
+  if (ymDiff(l.first, end) < 0) end = l.first;
+  const amount = num(l.amount) || 0, rows = [];
+  for (let ym = l.first; ymDiff(ym, end) >= 0; ym = ymAdd(ym, 1)) {
+    const due = leaseDue(l, ym);
+    const exps = list('expenses').filter(x => x.leaseId === l.id && x.leaseMonth === ym);
+    const paid = exps.reduce((a, x) => a + (num(x.amount) || 0), 0);
+    const status = amount > 0 && paid >= amount ? 'paid' : due < t0 ? 'overdue' : (due - now) / 864e5 <= 7 ? 'soon' : 'future';
+    rows.push({ ym, due, paid, left: Math.max(0, amount - paid), exps, status });
+    if (rows.length > 240) break;
+  }
+  return rows;
+}
+const leaseActive = l => { const last = leaseLastYm(l); return !last || ymDiff(ymOf(new Date()), last) >= 0 || leaseRows(l).some(r => r.status !== 'paid'); };
+const LS_IC = { paid: ['in', 'check'], overdue: ['out', 'alert'], soon: ['dep', 'clock'], future: ['', 'calendar'] };
+function leaseRow(l, r) {
+  const [cls, i] = LS_IC[r.status];
+  const sub = r.status === 'paid' ? `оплачено ${r.exps.map(x => fmtD(x.date)).join(', ')}` : `${dayMonth(r.due)} · ${inDays(r.due)}${r.paid ? ` · внесено ${rub(r.paid)}` : ''}`;
+  const act = r.status === 'paid'
+    ? `<button class="btn sm ghost" data-act="open-expense" data-id="${esc(r.exps[0].id)}">Запись</button>`
+    : S.canWrite ? `<button class="btn sm ${r.status === 'overdue' || r.status === 'soon' ? 'primary' : ''}" data-act="lease-pay" data-id="${esc(l.id)}" data-ym="${r.ym}">Отметить</button>` : '<span></span>';
+  return `<div class="mini-row"><span class="m-ic ${cls}">${ic(i, 'sm')}</span><span><b>${ymLabel(r.ym)}</b><span class="sub ${r.status === 'overdue' ? 'bad' : ''}">${sub}</span></span><b class="num ${r.status === 'overdue' ? 'bad' : r.status === 'paid' ? 'ok' : ''}">${rub(r.status === 'paid' ? r.paid : r.left)}</b>${act}</div>`;
+}
+VIEWS.leasing = {
+  shell: () => `${ph('Лизинг', S.canWrite ? `<button class="btn primary" data-act="new-lease">${ic('plus', 'sm')}Договор лизинга</button>` : '')}<div id="vb"></div>`,
+  body() {
+    const g = guard(); if (g) return g;
+    const ls = list('leases').sort((a, b) => leaseTitle(a).localeCompare(leaseTitle(b), 'ru'));
+    if (!ls.length) return `<div class="card">${empty('bank', 'Лизинга нет', 'Добавьте договор лизинга — CRM напомнит о платеже заранее и запишет его в расходы.', 'new-lease', 'Добавить договор')}</div>`;
+    const year = String(new Date().getFullYear());
+    const all = ls.map(l => ({ l, rows: leaseRows(l) }));
+    const nexts = all.map(x => ({ l: x.l, r: x.rows.find(r => r.status !== 'paid') })).filter(x => x.r).sort((a, b) => a.r.due - b.r.due);
+    const overdue = all.flatMap(x => x.rows.filter(r => r.status === 'overdue'));
+    const monthly = ls.filter(leaseActive).reduce((a, l) => a + (num(l.amount) || 0), 0);
+    const paidYear = expSum(x => x.category === 'Лизинг' && String(x.date).startsWith(year));
+    const n = nexts[0];
+    const kpis = `<div class="kpis">
+      ${kpi('bank', 'Следующий платёж', n ? rub(n.r.left) : '—', n ? `${dayMonth(n.r.due)} · ${inDays(n.r.due)}${nexts.length > 1 || ls.length > 1 ? ' · ' + esc(leaseTitle(n.l)) : ''}` : 'все платежи внесены', '', 'hero')}
+      ${kpi('calendar', 'В месяц', rub(monthly), `${ls.length} ${plural(ls.length, ['договор', 'договора', 'договоров'])}`)}
+      ${kpi('wallet', `Оплачено в ${year}`, rub(paidYear), 'записано в расходы')}
+      ${kpi('alert', 'Просрочено', `<span class="${overdue.length ? 'bad' : ''}">${rub(overdue.reduce((a, r) => a + r.left, 0))}</span>`, overdue.length ? `${overdue.length} ${plural(overdue.length, ['платёж', 'платежа', 'платежей'])}` : 'всё оплачено вовремя')}
+    </div>`;
+    return kpis + `<div class="stack">${all.map(({ l, rows }) => {
+      const car = S.cars[l.carId], amount = num(l.amount) || 0, term = num(l.term);
+      const paidCount = rows.filter(r => r.status === 'paid').length;
+      const nx = rows.find(r => r.status !== 'paid');
+      const meta = [l.lessor, l.contractNo ? '№ ' + l.contractNo : '', `${rub(amount)} каждое ${num(l.day) || 1} число`].filter(Boolean).map(esc).join(' · ');
+      const prog = term ? `<div class="paid" style="margin:14px 0 0"><div class="paid-top"><span>Оплачено <b class="num">${paidCount}</b> из ${term}</span><span class="muted">осталось ${rub(Math.max(0, term - paidCount) * amount)}</span></div><div class="bar-t ok"><i style="width:${Math.min(100, Math.round(paidCount / term * 100))}%"></i></div></div>` : '';
+      const nextBox = nx ? `<div class="next" style="margin-top:14px"><span class="n-ic">${ic(nx.status === 'overdue' ? 'alert' : 'clock')}</span><div><b>${nx.status === 'overdue' ? 'Платёж просрочен' : 'Следующий платёж'} — ${rub(nx.left)}</b><p>За ${ymLabel(nx.ym).toLowerCase()}: ${dayMonth(nx.due)}, ${inDays(nx.due)}.</p>${S.canWrite ? `<button class="btn primary sm" data-act="lease-pay" data-id="${esc(l.id)}" data-ym="${nx.ym}">${ic('check', 'sm')}Отметить оплату</button>` : ''}</div></div>` : `<div class="next done" style="margin-top:14px"><span class="n-ic">${ic('check')}</span><div><b>Все платежи внесены</b><p>${leaseLastYm(l) ? 'Договор выплачен.' : 'Следующий месяц появится в графике сам.'}</p></div></div>`;
+      const shown = rows.slice(-8);
+      return `<section class="card"><div class="card-h">${ic('bank')}${esc(leaseTitle(l))}${car ? plate(car) : ''}<span class="r">${S.canWrite ? `<button class="btn sm" data-act="open-lease" data-id="${esc(l.id)}">Изменить</button>` : ''}</span></div>
+        <div class="muted" style="font-size:13px">${meta}</div>${prog}${nextBox}
+        <div class="card-h" style="margin:18px 0 6px;font-size:14px">${ic('calendar', 'sm')}График платежей${rows.length > shown.length ? `<span class="r" style="font-weight:500;font-size:12.5px">последние ${shown.length} из ${rows.length}</span>` : ''}</div>
+        <div class="mini">${shown.map(r => leaseRow(l, r)).join('')}</div></section>`;
+    }).join('')}</div>`;
+  }
+};
+function openLease(id) {
+  const isNew = !id || !S.leases[id];
+  const cars = carsSorted();
+  const l = isNew ? { carId: cars.length === 1 ? cars[0].id : '', day: 8, first: ymAdd(ymOf(new Date()), 1) } : clone(S.leases[id]);
+  const P = 'ls';
+  const body = `<section class="box"><form class="grid g2" id="ls-form" onsubmit="return false">
+    ${F('carId', 'Машина', l.carId, { p: P, type: 'select', span: 2, opts: [['', '— без машины —'], ...cars.map(c => [c.id, `${c.plate || '—'} · ${carLabel(c)}`])] })}
+    ${F('lessor', 'Лизинговая компания', l.lessor, { p: P, ph: 'Например, Альфа-Лизинг' })}
+    ${F('contractNo', 'Номер договора', l.contractNo, { p: P, mono: 1 })}
+    ${F('amount', 'Платёж в месяц, ₽', l.amount, { p: P, type: 'num' })}
+    ${F('day', 'Число месяца', l.day, { p: P, type: 'num', hint: 'Если в месяце меньше дней — последний день' })}
+    ${F('first', 'Первый платёж в графике', l.first, { p: P, type: 'month', ph: 'ГГГГ-ММ', hint: 'С какого месяца вести учёт' })}
+    ${F('term', 'Всего платежей, мес.', l.term, { p: P, type: 'num', ph: 'если не знаете — пусто' })}
+    ${F('note', 'Заметки', l.note, { p: P, type: 'textarea', span: 2 })}
+  </form></section>
+  <p class="muted" style="margin:0;font-size:13px">Кнопка «Отметить оплату» записывает платёж в «Деньги → Расходы» с категорией «Лизинг», и он учитывается в прибыли машины.</p>`;
+  const can = S.canWrite;
+  const m = openModal({ title: isNew ? 'Договор лизинга' : 'Лизинг', sub: isNew ? '' : esc(leaseTitle(l)), body, size: 'narrow',
+    foot: `${!isNew && can ? '<button class="btn danger" data-ls="delete">Удалить</button>' : ''}<span class="sp"></span>${can ? `<button class="btn primary" data-ls="save">${ic('check', 'sm')}${isNew ? 'Добавить' : 'Сохранить'}</button>` : ''}` });
+  m.el.addEventListener('click', async e => {
+    const a = e.target.closest('[data-ls]'); if (!a) return;
+    if (a.dataset.ls === 'save') {
+      const x = { ...l, ...readForm($('#ls-form', m.el)) };
+      if (!x.amount || x.amount <= 0) { toast('Укажите платёж в месяц', 'bad'); return; }
+      if (!x.day || x.day < 1 || x.day > 31) { toast('Число месяца — от 1 до 31', 'bad'); return; }
+      if (!/^\d{4}-\d{2}$/.test(x.first || '')) { toast('Укажите месяц первого платежа в виде 2026-11', 'bad'); return; }
+      const id2 = id || newId('leases');
+      if (!id) { x.createdAt = new Date().toISOString(); x.createdBy = S.meId || null; }
+      x.updatedAt = new Date().toISOString();
+      if (await put('leases', id2, x)) { S.leases[id2] = x; toast(isNew ? 'Договор лизинга добавлен' : 'Сохранено'); closeTop(); schedule(); }
+    }
+    if (a.dataset.ls === 'delete' && await ask('Удалить договор лизинга? Уже записанные оплаты останутся в расходах.') && await del('leases', id)) { delete S.leases[id]; closeTop(); toast('Договор удалён'); schedule(); }
+  });
+}
+function payLease(lid, ym) {
+  const l = S.leases[lid]; if (!l) return;
+  const r = leaseRows(l).find(x => x.ym === ym);
+  const left = r ? r.left : num(l.amount) || 0;
+  openExpense(null, { category: 'Лизинг', amount: left || num(l.amount) || null, carId: l.carId || '', method: 'Перевод на счёт', note: `Лизинг за ${ymLabel(ym).toLowerCase()}`, leaseId: lid, leaseMonth: ym, date: todayKey() });
+}
 
 /* ---------------- Задачи ---------------- */
 VIEWS.tasks = {
@@ -1961,6 +2089,10 @@ const ACT = {
   'open-car': el => openCar(el.dataset.id),
   'new-task': () => S.canWrite && openTask(null),
   'open-task': el => openTask(el.dataset.id),
+  'new-lease': () => S.canWrite && openLease(null),
+  'open-lease': el => openLease(el.dataset.id),
+  'lease-pay': el => S.canWrite && payLease(el.dataset.id, el.dataset.ym),
+  'lease-go': () => { S.view = 'leasing'; try { history.replaceState(null, '', '#leasing'); } catch (e) {} renderView(true); window.scrollTo(0, 0); },
   'new-expense': () => S.canWrite && openExpense(null),
   'open-expense': el => openExpense(el.dataset.id),
   'bk-new-client': () => { const top = modals[modals.length - 1]; openClient(null, { onSaved: cid => top && top.newClientCb && top.newClientCb(cid) }); },
