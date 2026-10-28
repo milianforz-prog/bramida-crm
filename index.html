@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Брамида Прокат</title>
+<title>Прокат CRM</title>
 <meta name="description" content="CRM проката автомобилей: брони, клиенты, деньги, договоры.">
 <meta name="theme-color" content="#14171C">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Брамида">
+<meta name="apple-mobile-web-app-title" content="Прокат CRM">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="fonts/fonts.css?v=1">
+<link rel="stylesheet" href="fonts/fonts.css?v=2">
 <style>
 /* Layout: graphite sidebar (desktop) / bottom tab bar (phone) + one working column up to 1180px. Garage-night graphite frames the app; road-marking yellow is the single action colour; status colours carry meaning only. */
 :root{
@@ -476,6 +476,26 @@ body.signed-out .auth{display:flex}
 .team-row select{min-height:34px;padding:5px 8px;font-size:13px;width:auto}
 .team-act{display:flex;gap:2px;align-items:center}
 .addrow.team-add{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,.9fr) auto}
+.brand.can-switch{cursor:pointer;border-radius:12px;margin:-4px;padding:4px}
+.side .brand.can-switch{margin:0 0 4px;padding:6px 6px 16px}
+.side .brand.can-switch:hover{background:var(--side-2)}
+.brand .org-switch{margin-left:auto;color:var(--side-ink-2);display:grid;place-items:center}
+.brand b.org-name{overflow:hidden;text-overflow:ellipsis}
+.side .brand b.org-name{white-space:normal;line-height:1.2}
+.brand small.sync{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mark .ic{width:20px;height:20px;stroke-width:2}
+.picker{gap:16px}
+.pick-h{font:600 20px/1.2 var(--f-display);letter-spacing:-.02em;margin:0}
+.orgs{display:flex;flex-direction:column;gap:10px}
+.org-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:16px;padding:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .1s}
+.org-card:hover{border-color:var(--accent);box-shadow:var(--focus)}
+.org-card:active{transform:translateY(1px)}
+.org-card.last{border-color:var(--accent)}
+.org-card .mark{width:48px;height:48px;font-size:20px;border-radius:14px}
+.org-card > span:nth-child(2){flex:1;min-width:0}
+.org-card b{display:block;font:600 16px/1.25 var(--f-display);letter-spacing:-.01em}
+.org-card small{display:block;color:var(--ink-3);font-size:12.5px;margin-top:3px}
+.org-card > .ic{color:var(--ink-3)}
 .steps-list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
 .copyline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .copyline code{font-family:var(--f-mono);font-size:12.5px;background:var(--surface-2);border-radius:8px;padding:7px 10px;word-break:break-all;flex:1;min-width:0}
@@ -517,7 +537,7 @@ body.signed-out .auth{display:flex}
 <body>
 <div id="auth" class="auth"></div>
 <aside class="side" aria-label="Навигация">
-  <div class="brand"><div class="mark" aria-hidden="true">Б</div><div><b>Брамида Прокат</b><small class="sync">Подключаю базу…</small></div></div>
+  <div class="brand" data-act="switch-org" tabindex="0"><div class="mark org-mark" aria-hidden="true"></div><div style="min-width:0"><b class="org-name">Прокат CRM</b><small class="sync">Подключаю базу…</small></div><span class="org-switch" hidden><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9.5l4-4 4 4M8 14.5l4 4 4-4"/></svg></span></div>
   <button class="btn primary new" data-act="new-booking"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Новая бронь</button>
   <nav class="nav" id="nav"></nav>
   <div class="side-sp"></div>
@@ -525,7 +545,7 @@ body.signed-out .auth{display:flex}
 </aside>
 <div class="app">
   <header class="mtop">
-    <div class="brand"><div class="mark" aria-hidden="true">Б</div><div><b>Брамида Прокат</b><small class="sync">Подключаю базу…</small></div></div>
+    <div class="brand" data-act="switch-org" tabindex="0"><div class="mark org-mark" aria-hidden="true"></div><div style="min-width:0"><b class="org-name">Прокат CRM</b><small class="sync">Подключаю базу…</small></div><span class="org-switch" hidden><svg class="ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9.5l4-4 4 4M8 14.5l4 4 4-4"/></svg></span></div>
     <button class="icon-btn primary" data-act="new-booking" aria-label="Новая бронь"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
   </header>
   <main id="view" aria-live="polite"><div class="skel" style="width:30%;height:26px"></div><div class="skel"></div><div class="skel" style="width:70%"></div></main>
@@ -535,13 +555,13 @@ body.signed-out .auth{display:flex}
 <div id="toast" role="status"></div>
 <div id="pdf-stage" aria-hidden="true"></div>
 
-<script src="vendor/supabase.js?v=1"></script>
+<script src="vendor/supabase.js?v=2"></script>
 <script>
 (() => {
 'use strict';
 const SCHEMA_SVG = "<svg width='760' height='752' viewBox='0 0 760 752' xmlns='http://www.w3.org/2000/svg' font-family=\"Onest, Arial, sans-serif\"><text x='24' y='34' font-size='15' font-weight='600' fill='#111111' text-anchor='start'>Схема осмотра: повреждения отмечаются кодом в зоне кузова</text><text x='24' y='56' font-size='11.5' font-weight='400' fill='#666666' text-anchor='start'>Вид сверху, перед автомобиля — вверху. Левая схема — при передаче, правая — при возврате.</text><line x1='380' y1='76' x2='380' y2='464' stroke='#cfcfcf'/><rect x='150' y='220' width='88' height='30' fill='#ececec'/><rect x='150' y='330' width='88' height='26' fill='#ececec'/><rect x='124' y='120' width='140' height='320' rx='30' fill='none' stroke='#6b6b6b' stroke-width='1.25'/><path d='M124 144H264M124 416H264M150 144V416M238 144V416M150 220H238M150 250H238M150 330H238M150 356H238M124 230H150M124 300H150M124 370H150M238 230H264M238 300H264M238 370H264' fill='none' stroke='#6b6b6b' stroke-width='1'/><rect x='114' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='114' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='106' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><text x='194' y='90' font-size='13' font-weight='600' fill='#111111' text-anchor='middle'>При передаче</text><text x='194' y='112' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>перед</text><text x='194' y='460' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>зад</text><text x='194' y='136' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>1</text><text x='194' y='186' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>2</text><text x='194' y='239' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>3</text><text x='194' y='294' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>4</text><text x='194' y='347' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>5</text><text x='194' y='390' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>6</text><text x='194' y='432' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>7</text><text x='137' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>8</text><text x='137' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>9</text><text x='137' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>10</text><text x='137' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>11</text><text x='251' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>12</text><text x='251' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>13</text><text x='251' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>14</text><text x='251' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>15</text><text x='108' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>16</text><text x='280' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17</text><text x='108' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>18</text><text x='280' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19</text><text x='100' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>20</text><text x='288' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21</text><rect x='522' y='220' width='88' height='30' fill='#ececec'/><rect x='522' y='330' width='88' height='26' fill='#ececec'/><rect x='496' y='120' width='140' height='320' rx='30' fill='none' stroke='#6b6b6b' stroke-width='1.25'/><path d='M496 144H636M496 416H636M522 144V416M610 144V416M522 220H610M522 250H610M522 330H610M522 356H610M496 230H522M496 300H522M496 370H522M610 230H636M610 300H636M610 370H636' fill='none' stroke='#6b6b6b' stroke-width='1'/><rect x='486' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='486' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='478' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><text x='566' y='90' font-size='13' font-weight='600' fill='#111111' text-anchor='middle'>При возврате</text><text x='566' y='112' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>перед</text><text x='566' y='460' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>зад</text><text x='566' y='136' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>1</text><text x='566' y='186' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>2</text><text x='566' y='239' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>3</text><text x='566' y='294' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>4</text><text x='566' y='347' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>5</text><text x='566' y='390' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>6</text><text x='566' y='432' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>7</text><text x='509' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>8</text><text x='509' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>9</text><text x='509' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>10</text><text x='509' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>11</text><text x='623' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>12</text><text x='623' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>13</text><text x='623' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>14</text><text x='623' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>15</text><text x='480' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>16</text><text x='652' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17</text><text x='480' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>18</text><text x='652' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19</text><text x='472' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>20</text><text x='660' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21</text><text x='24' y='500' font-size='13' font-weight='600' fill='#111111' text-anchor='start'>Зоны осмотра</text><text x='24' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>1 — передний бампер, фары</text><text x='24' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>2 — капот</text><text x='24' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>3 — лобовое стекло</text><text x='24' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>4 — крыша</text><text x='24' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>5 — заднее стекло</text><text x='24' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>6 — крышка багажника</text><text x='24' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>7 — задний бампер, фонари</text><text x='264' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>8 — левое переднее крыло</text><text x='264' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>9 — левая передняя дверь</text><text x='264' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>10 — левая задняя дверь</text><text x='264' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>11 — левое заднее крыло</text><text x='264' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>12 — правое переднее крыло</text><text x='264' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>13 — правая передняя дверь</text><text x='264' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>14 — правая задняя дверь</text><text x='504' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>15 — правое заднее крыло</text><text x='504' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>16 — левое переднее колесо, диск</text><text x='504' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17 — правое переднее колесо, диск</text><text x='504' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>18 — левое заднее колесо, диск</text><text x='504' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19 — правое заднее колесо, диск</text><text x='504' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>20 — левое зеркало</text><text x='504' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21 — правое зеркало</text><text x='24' y='680' font-size='13' font-weight='600' fill='#111111' text-anchor='start'>Обозначения повреждений</text><text x='24' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Ц — царапина</text><text x='150' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>С — скол</text><text x='250' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>В — вмятина</text><text x='370' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Т — трещина</text><text x='490' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Д — другое (описать в таблице)</text><text x='24' y='728' font-size='11.5' font-weight='400' fill='#666666' text-anchor='start'>Рядом с кодом укажите размер, например «Ц 5 см», и внесите повреждение в таблицу под схемой.</text></svg>";
 const SCHEMA_IMG = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SCHEMA_SVG);
-const PDF_LIB = 'vendor/html2pdf.bundle.min.js?v=1';
+const PDF_LIB = 'vendor/html2pdf.bundle.min.js?v=2';
 
 /* ---------------- icons ---------------- */
 const IC = {
@@ -872,19 +892,22 @@ function fail(e) {
 }
 async function put(coll, id, data) {
   if (!sb) { toast('Нет связи с базой', 'bad'); return false; }
-  const { error } = await sb.from('docs').upsert({ coll, id, data: cleanJSON(data) });
+  if (!S.org) { toast('Сначала выберите прокат', 'bad'); return false; }
+  const { error } = await sb.from('docs').upsert({ org_id: S.org.id, coll, id, data: cleanJSON(data) });
   if (error) { fail(error); return false; }
   return true;
 }
 async function patch(coll, id, data) {
   if (!sb) { toast('Нет связи с базой', 'bad'); return false; }
-  const { error } = await sb.rpc('doc_merge', { p_coll: coll, p_id: id, p_patch: cleanJSON(data) });
+  if (!S.org) { toast('Сначала выберите прокат', 'bad'); return false; }
+  const { error } = await sb.rpc('doc_merge', { p_org: S.org.id, p_coll: coll, p_id: id, p_patch: cleanJSON(data) });
   if (error) { fail(error); return false; }
   return true;
 }
 async function del(coll, id) {
   if (!sb) return false;
-  const { error } = await sb.from('docs').delete().eq('coll', coll).eq('id', id);
+  if (!S.org) return false;
+  const { error } = await sb.from('docs').delete().eq('org_id', S.org.id).eq('coll', coll).eq('id', id);
   if (error) { fail(error); return false; }
   return true;
 }
@@ -1272,7 +1295,7 @@ VIEWS.settings = {
     SET_FIELDS.forEach(f => { if (f.length === 2 && typeof f[1] === 'string' && !f[2] && /^[А-ЯA-Z]/.test(f[0]) && IC[f[1]]) { cur = { t: f[0], i: f[1], items: [] }; groupsHtml.push(cur); } else cur.items.push(F(f[0], f[1], s[f[0]], { p: 'set', ...(f[2] || {}) })); });
     return `${ph('Настройки', `<button class="btn primary" data-act="save-settings"${S.role === 'owner' ? '' : ' disabled'}>${ic('check', 'sm')}Сохранить</button>`)}
       <form id="set-form" class="set-grid" onsubmit="return false">${groupsHtml.map(gr => `<section class="card"><div class="card-h">${ic(gr.i)}${esc(gr.t)}</div><div class="grid">${gr.items.join('')}</div></section>`).join('')}</form>
-      ${teamHtml()}${installHtml()}<section class="card" style="margin-top:16px"><div class="card-h">${ic('logout')}Аккаунт</div><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span class="muted">Вы вошли как <b>${esc(S.meId || '')}</b> · ${esc(ROLE[S.role] || '')}</span><span style="flex:1"></span><button class="btn" data-act="logout">${ic('logout', 'sm')}Выйти</button></div></section><div id="vb"></div>`;
+      ${teamHtml()}${installHtml()}<section class="card" style="margin-top:16px"><div class="card-h">${ic('car')}Прокат и аккаунт</div>${S.role === 'owner' ? `<div class="inline" style="margin-bottom:14px"><div class="fld"><label for="org_name">Название проката</label><input id="org_name" value="${esc(S.org ? S.org.name : '')}" autocomplete="off"></div><button class="btn" data-act="org-rename">Сохранить</button></div>` : ''}<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span class="muted">Вы вошли как <b>${esc(S.meId || '')}</b> · ${esc(ROLE[S.role] || '')}</span><span style="flex:1"></span>${(S.orgs || []).length > 1 ? `<button class="btn" data-act="switch-org">${ic('car', 'sm')}Сменить прокат</button>` : ''}<button class="btn" data-act="logout">${ic('logout', 'sm')}Выйти</button></div></section><div id="vb"></div>`;
   },
   body: () => ''
 };
@@ -1894,6 +1917,13 @@ const ACT = {
   },
   'close-modal': () => closeTop(),
   'reload': () => location.reload(),
+  'switch-org': () => { if ((S.orgs || []).length > 1) leaveOrg(); },
+  'org-rename': async () => {
+    const v = ($('#org_name').value || '').trim(); if (!v) { toast('Введите название', 'bad'); return; }
+    const { error } = await sb.from('orgs').update({ name: v }).eq('id', S.org.id);
+    if (error) { fail(error); return; }
+    S.org.name = v; const o = (S.orgs || []).find(x => x.id === S.org.id); if (o) o.name = v; renderBrand(); toast('Название сохранено');
+  },
   'logout': async () => { if (!(await ask('Выйти из CRM на этом устройстве?', 'Выйти', false))) return; try { await sb.auth.signOut(); } catch (e) { /* offline: local session is cleared anyway */ } location.hash = ''; location.reload(); },
   'install': async () => {
     if (installEvt) { installEvt.prompt(); try { await installEvt.userChoice; } catch (e) {} installEvt = null; schedule(); return; }
@@ -1904,21 +1934,21 @@ const ACT = {
   'staff-add': async () => {
     const email = ($('#st_email').value || '').trim().toLowerCase(), name = ($('#st_name').value || '').trim(), role = $('#st_role').value;
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { toast('Укажите почту сотрудника', 'bad'); return; }
-    const { error } = await sb.from('staff').insert({ email, name, role });
+    const { error } = await sb.from('staff').insert({ org_id: S.org.id, email, name, role });
     if (error) { if (error.code === '23505') toast('Эта почта уже в команде', 'bad'); else fail(error); return; }
     await loadStaff().catch(() => {}); refreshTeam(); toast('Добавлен. Отправьте ему ссылку на приложение');
   },
   'staff-reset': async el => {
     const st = (S.staff || []).find(x => x.email === el.dataset.id); if (!st) return;
     if (!(await ask(`Сбросить пароль для ${st.name || st.email}? Он задаст новый через «Первый вход».`, 'Сбросить', false))) return;
-    const { error } = await sb.from('staff').update({ reset: true }).eq('email', st.email);
+    const { error } = await sb.from('staff').update({ reset: true }).eq('org_id', S.org.id).eq('email', st.email);
     if (error) { fail(error); return; }
     await loadStaff().catch(() => {}); refreshTeam(); toast('Готово: пусть откроет «Первый вход» и задаст новый пароль');
   },
   'staff-del': async el => {
     const st = (S.staff || []).find(x => x.email === el.dataset.id); if (!st) return;
     if (!(await ask(`Убрать ${st.name || st.email} из команды? Доступ к CRM пропадёт сразу.`, 'Убрать'))) return;
-    const { error } = await sb.from('staff').delete().eq('email', st.email);
+    const { error } = await sb.from('staff').delete().eq('org_id', S.org.id).eq('email', st.email);
     if (error) { fail(error); return; }
     await loadStaff().catch(() => {}); refreshTeam(); toast('Сотрудник убран');
   },
@@ -1966,7 +1996,7 @@ document.addEventListener('change', async e => {
   const a = e.target.closest('[data-act="task-done"]'); if (a) ACT['task-done'](a, e);
   const r = e.target.closest('[data-staff-role]');
   if (r) {
-    const { error } = await sb.from('staff').update({ role: r.value }).eq('email', r.dataset.staffRole);
+    const { error } = await sb.from('staff').update({ role: r.value }).eq('org_id', S.org.id).eq('email', r.dataset.staffRole);
     if (error) { fail(error); await loadStaff().catch(() => {}); refreshTeam(); } else { await loadStaff().catch(() => {}); toast('Роль изменена'); }
   }
 });
@@ -1980,24 +2010,46 @@ let rsz = 0; window.addEventListener('resize', () => { clearTimeout(rsz); rsz = 
 
 /* ---------------- boot ---------------- */
 function setSync(text, off) { $$('.sync').forEach(el => { el.textContent = text; el.classList.toggle('off', !!off); }); }
+const orgMark = name => esc((String(name || '?').trim()[0] || '?').toUpperCase());
+function renderBrand() {
+  const multi = (S.orgs || []).length > 1;
+  $$('.org-name').forEach(el => { el.textContent = S.org ? S.org.name : 'Прокат CRM'; });
+  $$('.org-mark').forEach(el => { el.innerHTML = S.org ? orgMark(S.org.name) : ic('car'); });
+  $$('.org-switch').forEach(el => { el.hidden = !multi; });
+  $$('.brand[data-act="switch-org"]').forEach(el => { el.classList.toggle('can-switch', multi); el.setAttribute('aria-label', multi ? 'Сменить прокат' : ''); });
+  document.title = S.org ? S.org.name + ' · CRM' : 'Прокат CRM';
+}
 function renderMe() {
   $('#me').innerHTML = `${avatar(S.meName || S.meId, 'sm')}<span>${esc(S.meName || S.meId)}<small>${esc(ROLE[S.role] || '')}</small></span><button class="icon-btn" data-act="logout" aria-label="Выйти" title="Выйти">${ic('logout')}</button>`;
 }
+async function loadOrgs() {
+  const [{ data: mine, error: e1 }, { data: orgs, error: e2 }] = await Promise.all([
+    sb.from('staff').select('org_id,role,name').eq('email', S.meId),
+    sb.from('orgs').select('id,name')
+  ]);
+  if (e1) throw e1; if (e2) throw e2;
+  const names = Object.fromEntries((orgs || []).map(o => [o.id, o.name]));
+  S.orgs = (mine || []).filter(m => names[m.org_id]).map(m => ({ id: m.org_id, name: names[m.org_id], role: m.role, myName: m.name || '' }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+  return S.orgs;
+}
 async function loadStaff() {
-  const { data, error } = await sb.from('staff').select('email,name,role,reset,created_at').order('created_at');
+  const { data, error } = await sb.from('staff').select('org_id,email,name,role,reset,created_at').eq('org_id', S.org.id).order('created_at');
   if (error) throw error;
   S.staff = data || [];
   S.people = Object.fromEntries(S.staff.map(x => [x.email, { name: x.name || x.email }]));
   return S.staff.find(x => x.email === S.meId) || null;
 }
 async function loadAll() {
+  const org = S.org && S.org.id; if (!org) return;
   const fresh = Object.fromEntries(COLLS.map(c => [c, {}])); let settings = {};
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await sb.from('docs').select('coll,id,data').order('coll').order('id').range(from, from + 999);
+    const { data, error } = await sb.from('docs').select('coll,id,data').eq('org_id', org).order('coll').order('id').range(from, from + 999);
     if (error) throw error;
     (data || []).forEach(r => { if (r.coll === 'settings') { if (r.id === 'main') settings = r.data || {}; } else if (fresh[r.coll]) fresh[r.coll][r.id] = r.data || {}; });
     if (!data || data.length < 1000) break;
   }
+  if (!S.org || S.org.id !== org) return; // switched company while loading
   COLLS.forEach(c => { S[c] = fresh[c]; });
   S.settings = settings; S.setStale = true; S.lastLoad = Date.now();
   if (S.dbState !== 'ok') { S.dbState = 'ok'; renderView(true); }
@@ -2005,36 +2057,42 @@ async function loadAll() {
 }
 function applyRow(ev) {
   const del = ev.eventType === 'DELETE', r = del ? ev.old : ev.new;
-  if (!r || !r.coll) return;
+  if (!r || !r.coll || !S.org || r.org_id !== S.org.id) return;
   if (r.coll === 'settings') { if (r.id === 'main') { S.settings = del ? {} : (r.data || {}); S.setStale = true; } }
   else if (S[r.coll]) { if (del) delete S[r.coll][r.id]; else S[r.coll][r.id] = r.data || {}; }
   schedule();
 }
 let chan = null;
 function subscribe() {
-  if (chan) sb.removeChannel(chan);
-  chan = sb.channel('crm-live')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'docs' }, applyRow)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'staff' }, async () => {
-      try {
-        const me = await loadStaff();
-        if (!me) { await sb.auth.signOut().catch(() => {}); location.reload(); return; }
-        S.role = me.role; S.canWrite = me.role !== 'viewer'; S.meName = me.name || ''; renderMe(); refreshTeam(); schedule();
-      } catch (e) { /* next sync will catch up */ }
-    })
+  if (chan) { sb.removeChannel(chan); chan = null; }
+  const org = S.org.id, f = 'org_id=eq.' + org;
+  const onStaff = async () => {
+    try {
+      const me = await loadStaff();
+      if (!me) { await loadOrgs().catch(() => {}); toast('Вас убрали из команды этого проката', 'bad'); leaveOrg(); return; }
+      S.role = me.role; S.canWrite = me.role !== 'viewer'; S.meName = me.name || ''; renderMe(); refreshTeam(); schedule();
+    } catch (e) { /* next sync will catch up */ }
+  };
+  chan = sb.channel('crm-' + org)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'docs', filter: f }, applyRow)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'docs', filter: f }, applyRow)
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'docs' }, applyRow)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'staff' }, ev => { const r = ev.new && ev.new.org_id ? ev.new : ev.old; if (!r || !r.org_id || r.org_id === org) onStaff(); })
     .subscribe(st => {
+      if (!S.org || S.org.id !== org) return;
       if (st === 'SUBSCRIBED') { setSync('База синхронизирована'); if (S.resync) { S.resync = false; loadAll().catch(() => {}); } }
       else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') { setSync('Нет связи — переподключаюсь…', true); S.resync = true; }
     });
 }
+const authBrand = () => `<div class="brand"><div class="mark" aria-hidden="true">${ic('car')}</div><div><b>Прокат CRM</b><small>Вход для сотрудников</small></div></div>`;
 function showAuth(mode = 'in', msg = '') {
   document.body.classList.add('signed-out');
   const el = $('#auth'), isNew = mode === 'new', email = S.authEmail || '';
   el.innerHTML = `<div class="auth-card" role="dialog" aria-label="Вход в CRM">
-    <div class="brand"><div class="mark" aria-hidden="true">Б</div><div><b>Брамида Прокат</b><small>CRM проката</small></div></div>
+    ${authBrand()}
     <div class="seg"><button class="${isNew ? '' : 'on'}" data-auth-mode="in">Вход</button><button class="${isNew ? 'on' : ''}" data-auth-mode="new">Первый вход</button></div>
     <form id="auth-form" class="auth-form" novalidate>
-      ${isNew ? '<p class="muted">Для тех, кого владелец добавил в команду, и после сброса пароля. Придумайте пароль — он понадобится при следующих входах.</p>' : ''}
+      ${isNew ? '<p class="muted">Для тех, кого владелец добавил в команду проката, и после сброса пароля. Придумайте пароль — он понадобится при следующих входах.</p>' : ''}
       <div class="fld"><label for="au_email">Почта</label><input id="au_email" type="email" inputmode="email" autocomplete="username" autocapitalize="off" value="${esc(email)}" required></div>
       ${isNew ? '<div class="fld"><label for="au_name">Ваше имя</label><input id="au_name" autocomplete="given-name" placeholder="Например, Иван"></div>' : ''}
       <div class="fld"><label for="au_pass">${isNew ? 'Придумайте пароль' : 'Пароль'}</label><input id="au_pass" type="password" autocomplete="${isNew ? 'new-password' : 'current-password'}" required>${isNew ? '<small>Не короче 8 символов</small>' : ''}</div>
@@ -2042,7 +2100,7 @@ function showAuth(mode = 'in', msg = '') {
       <div class="auth-err" id="au_err" role="alert">${esc(msg)}</div>
       <button class="btn primary" type="submit" id="au_go">${isNew ? 'Создать пароль и войти' : 'Войти'}</button>
     </form>
-    ${isNew ? '' : '<p class="faint auth-foot">Забыли пароль? Попросите владельца нажать «Сбросить пароль» в «Настройки → Команда», затем откройте «Первый вход».</p>'}
+    ${isNew ? '' : '<p class="faint auth-foot">Забыли пароль? Попросите владельца проката нажать «Сбросить пароль» в «Настройки → Команда», затем откройте «Первый вход».</p>'}
   </div>`;
   $$('[data-auth-mode]', el).forEach(b => b.addEventListener('click', () => { S.authEmail = $('#au_email').value.trim(); showAuth(b.dataset.authMode); }));
   const err = t => { $('#au_err').textContent = t; };
@@ -2061,12 +2119,12 @@ function showAuth(mode = 'in', msg = '') {
         const { error } = await sb.functions.invoke('register', { body: { email: em, password: pw, name: $('#au_name').value.trim() } });
         if (error) {
           let code = ''; try { code = (await error.context.json()).error; } catch (x) { /* no body */ }
-          throw new Error({ not_in_team: 'Этой почты нет в команде. Попросите владельца добавить её в «Настройки → Команда».', exists: 'Пароль для этой почты уже создан — войдите на вкладке «Вход». Забыли — попросите владельца сбросить пароль.', short_password: 'Пароль — минимум 8 символов', bad_email: 'Проверьте почту' }[code] || 'Не получилось. Проверьте интернет и попробуйте ещё раз.');
+          throw new Error({ not_in_team: 'Этой почты нет ни в одной команде. Попросите владельца проката добавить её в «Настройки → Команда».', exists: 'Пароль для этой почты уже создан — войдите на вкладке «Вход». Забыли — попросите владельца сбросить пароль.', short_password: 'Пароль — минимум 8 символов', bad_email: 'Проверьте почту' }[code] || 'Не получилось. Проверьте интернет и попробуйте ещё раз.');
         }
       }
       const { data, error } = await sb.auth.signInWithPassword({ email: em, password: pw });
       if (error) throw new Error(/invalid login/i.test(error.message) ? 'Неверная почта или пароль' : /fetch|network/i.test(error.message) ? 'Нет связи с сервером. Проверьте интернет.' : error.message);
-      document.body.classList.remove('signed-out'); el.innerHTML = '';
+      el.innerHTML = '';
       startApp(data.session);
     } catch (x) { err(x.message || 'Ошибка'); go.disabled = false; go.textContent = label; }
   });
@@ -2074,29 +2132,60 @@ function showAuth(mode = 'in', msg = '') {
 }
 function showNoAccess() {
   document.body.classList.add('signed-out');
-  $('#auth').innerHTML = `<div class="auth-card"><div class="brand"><div class="mark" aria-hidden="true">Б</div><div><b>Брамида Прокат</b><small>CRM проката</small></div></div>
-    <div class="empty" style="padding:6px 0"><div class="e-ic">${ic('lock', 'lg')}</div><b>Нет доступа</b><span>У почты ${esc(S.meId)} нет доступа к CRM. Попросите владельца добавить её в «Настройки → Команда».</span></div>
+  $('#auth').innerHTML = `<div class="auth-card">${authBrand()}
+    <div class="empty" style="padding:6px 0"><div class="e-ic">${ic('lock', 'lg')}</div><b>Нет доступа</b><span>Почта ${esc(S.meId)} не состоит ни в одной команде. Попросите владельца проката добавить её в «Настройки → Команда».</span></div>
     <button class="btn" id="na_out">Выйти</button></div>`;
   $('#na_out').addEventListener('click', async () => { await sb.auth.signOut().catch(() => {}); location.reload(); });
+}
+function showPicker() {
+  document.body.classList.add('signed-out');
+  const last = lsGet('crm-last-org');
+  $('#auth').innerHTML = `<div class="auth-card picker" role="dialog" aria-label="Выбор проката">
+    <div><h2 class="pick-h">Выберите прокат</h2><p class="muted" style="margin:6px 0 0;font-size:13px">У каждого проката свои машины, клиенты, деньги и команда.</p></div>
+    <div class="orgs">${S.orgs.map(o => `<button class="org-card${o.id === last ? ' last' : ''}" data-org="${esc(o.id)}"><span class="mark">${orgMark(o.name)}</span><span><b>${esc(o.name)}</b><small>${esc(ROLE[o.role] || o.role)}${o.id === last ? ' · открывали последним' : ''}</small></span>${ic('chev')}</button>`).join('')}</div>
+    <p class="faint auth-foot" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>${esc(S.meId)}</span><button class="btn sm ghost" id="pk_out" style="padding:2px 6px">Выйти</button></p>
+  </div>`;
+  $$('[data-org]').forEach(b => b.addEventListener('click', () => enterOrg(S.orgs.find(o => o.id === b.dataset.org))));
+  $('#pk_out').addEventListener('click', async () => { await sb.auth.signOut().catch(() => {}); location.reload(); });
+}
+function leaveOrg() {
+  if (chan) { sb.removeChannel(chan); chan = null; }
+  S.org = null; COLLS.forEach(c => { S[c] = {}; }); S.settings = {}; S.staff = []; S.people = {}; S.dbState = 'pending';
+  while (modals.length) closeTop();
+  if ((S.orgs || []).length > 1) showPicker(); else if ((S.orgs || []).length === 1) enterOrg(S.orgs[0]); else showNoAccess();
+}
+async function enterOrg(org) {
+  if (!org) return;
+  if (chan) { sb.removeChannel(chan); chan = null; }
+  S.org = { id: org.id, name: org.name }; S.role = org.role; S.canWrite = org.role !== 'viewer'; S.meName = org.myName || '';
+  COLLS.forEach(c => { S[c] = {}; }); S.settings = {}; S.staff = []; S.people = {}; S.dbState = 'pending'; S.setDirty = false;
+  lsSet('crm-last-org', org.id);
+  document.body.classList.remove('signed-out'); $('#auth').innerHTML = '';
+  S.view = VIEWS[(location.hash || '').slice(1)] ? (location.hash || '').slice(1) : 'today';
+  renderBrand(); renderMe(); renderView(true); renderBadges(); window.scrollTo(0, 0);
+  setSync('Подключаюсь…');
+  try {
+    const me = await loadStaff();
+    if (me) { S.meName = me.name || S.meName; S.role = me.role; S.canWrite = me.role !== 'viewer'; renderMe(); }
+    await loadAll(); setSync('База синхронизирована');
+  } catch (e) { console.error(e); S.dbState = 'none'; setSync('Не удалось загрузить данные', true); renderView(true); return; }
+  subscribe();
 }
 async function startApp(session) {
   S.meId = String(session.user.email || '').toLowerCase();
   setSync('Подключаюсь…');
-  let me;
-  try { me = await loadStaff(); }
-  catch (e) { console.error(e); S.dbState = 'none'; setSync('Нет связи с базой', true); renderView(true); return; }
-  if (!me) { showNoAccess(); return; }
-  S.meName = me.name || ''; S.role = me.role; S.canWrite = me.role !== 'viewer';
-  renderMe(); renderView(true); renderBadges();
-  try { await loadAll(); setSync('База синхронизирована'); }
-  catch (e) { console.error(e); S.dbState = 'none'; setSync('Не удалось загрузить данные', true); renderView(true); return; }
-  subscribe();
+  let orgs;
+  try { orgs = await loadOrgs(); }
+  catch (e) { console.error(e); document.body.classList.remove('signed-out'); S.dbState = 'none'; setSync('Нет связи с базой', true); renderView(true); return; }
+  if (!orgs.length) { showNoAccess(); return; }
+  if (orgs.length === 1) { enterOrg(orgs[0]); return; }
+  showPicker();
 }
 async function boot() {
   S.calStart = weekStart();
   S.moneyMonth = todayKey().slice(0, 7);
   const h = (location.hash || '').slice(1); if (VIEWS[h]) S.view = h;
-  renderNav(); renderView(true); renderBadges();
+  renderNav(); renderBrand(); renderView(true); renderBadges();
   if (!sb) { S.dbState = 'none'; setSync('Нет связи', true); renderView(true); return; }
   let session = null;
   try { ({ data: { session } } = await sb.auth.getSession()); } catch (e) { console.error(e); }

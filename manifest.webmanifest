@@ -1,6 +1,6 @@
 {
-  "name": "Брамида Прокат",
-  "short_name": "Брамида",
+  "name": "Прокат CRM",
+  "short_name": "Прокат CRM",
   "description": "CRM проката автомобилей",
   "lang": "ru",
   "start_url": "./",
