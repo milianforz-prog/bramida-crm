@@ -1,0 +1,31 @@
+plugins {
+    id 'com.android.application'
+}
+
+def run = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+
+android {
+    namespace 'ru.bramida.crm'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'ru.bramida.crm'
+        minSdk 29
+        targetSdk 34
+        versionCode run
+        versionName "1.0.${run}"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // signed with the build machine's debug key (no signing secrets in this repo)
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

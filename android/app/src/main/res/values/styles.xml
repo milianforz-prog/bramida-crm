@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="graphite">#14171C</color>
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.DayNight">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/graphite</item>
+        <item name="android:statusBarColor">@color/graphite</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
