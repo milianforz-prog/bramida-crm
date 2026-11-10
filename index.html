@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="fonts/fonts.css?v=6">
+<link rel="stylesheet" href="fonts/fonts.css?v=7">
 <style>
 /* Layout: graphite sidebar (desktop) / bottom tab bar (phone) + one working column up to 1180px. Garage-night graphite frames the app; road-marking yellow is the single action colour; status colours carry meaning only. */
 :root{
@@ -559,13 +559,13 @@ body.signed-out .auth{display:flex}
 <div id="toast" role="status"></div>
 <div id="pdf-stage" aria-hidden="true"></div>
 
-<script src="vendor/supabase.js?v=6"></script>
+<script src="vendor/supabase.js?v=7"></script>
 <script>
 (() => {
 'use strict';
 const SCHEMA_SVG = "<svg width='760' height='752' viewBox='0 0 760 752' xmlns='http://www.w3.org/2000/svg' font-family=\"Onest, Arial, sans-serif\"><text x='24' y='34' font-size='15' font-weight='600' fill='#111111' text-anchor='start'>Схема осмотра: повреждения отмечаются кодом в зоне кузова</text><text x='24' y='56' font-size='11.5' font-weight='400' fill='#666666' text-anchor='start'>Вид сверху, перед автомобиля — вверху. Левая схема — при передаче, правая — при возврате.</text><line x1='380' y1='76' x2='380' y2='464' stroke='#cfcfcf'/><rect x='150' y='220' width='88' height='30' fill='#ececec'/><rect x='150' y='330' width='88' height='26' fill='#ececec'/><rect x='124' y='120' width='140' height='320' rx='30' fill='none' stroke='#6b6b6b' stroke-width='1.25'/><path d='M124 144H264M124 416H264M150 144V416M238 144V416M150 220H238M150 250H238M150 330H238M150 356H238M124 230H150M124 300H150M124 370H150M238 230H264M238 300H264M238 370H264' fill='none' stroke='#6b6b6b' stroke-width='1'/><rect x='114' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='114' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='106' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='264' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><text x='194' y='90' font-size='13' font-weight='600' fill='#111111' text-anchor='middle'>При передаче</text><text x='194' y='112' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>перед</text><text x='194' y='460' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>зад</text><text x='194' y='136' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>1</text><text x='194' y='186' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>2</text><text x='194' y='239' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>3</text><text x='194' y='294' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>4</text><text x='194' y='347' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>5</text><text x='194' y='390' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>6</text><text x='194' y='432' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>7</text><text x='137' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>8</text><text x='137' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>9</text><text x='137' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>10</text><text x='137' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>11</text><text x='251' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>12</text><text x='251' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>13</text><text x='251' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>14</text><text x='251' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>15</text><text x='108' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>16</text><text x='280' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17</text><text x='108' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>18</text><text x='280' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19</text><text x='100' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>20</text><text x='288' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21</text><rect x='522' y='220' width='88' height='30' fill='#ececec'/><rect x='522' y='330' width='88' height='26' fill='#ececec'/><rect x='496' y='120' width='140' height='320' rx='30' fill='none' stroke='#6b6b6b' stroke-width='1.25'/><path d='M496 144H636M496 416H636M522 144V416M610 144V416M522 220H610M522 250H610M522 330H610M522 356H610M496 230H522M496 300H522M496 370H522M610 230H636M610 300H636M610 370H636' fill='none' stroke='#6b6b6b' stroke-width='1'/><rect x='486' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='164' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='486' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='348' width='10' height='48' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='478' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><rect x='636' y='228' width='18' height='10' rx='3' fill='#6b6b6b' fill-opacity='0.35' stroke='#6b6b6b' stroke-width='1.25'/><text x='566' y='90' font-size='13' font-weight='600' fill='#111111' text-anchor='middle'>При возврате</text><text x='566' y='112' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>перед</text><text x='566' y='460' font-size='11.5' font-weight='400' fill='#666666' text-anchor='middle'>зад</text><text x='566' y='136' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>1</text><text x='566' y='186' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>2</text><text x='566' y='239' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>3</text><text x='566' y='294' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>4</text><text x='566' y='347' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>5</text><text x='566' y='390' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>6</text><text x='566' y='432' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>7</text><text x='509' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>8</text><text x='509' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>9</text><text x='509' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>10</text><text x='509' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>11</text><text x='623' y='191' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>12</text><text x='623' y='269' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>13</text><text x='623' y='339' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>14</text><text x='623' y='397' font-size='12' font-weight='400' fill='#111111' text-anchor='middle'>15</text><text x='480' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>16</text><text x='652' y='192' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17</text><text x='480' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>18</text><text x='652' y='376' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19</text><text x='472' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='end'>20</text><text x='660' y='237' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21</text><text x='24' y='500' font-size='13' font-weight='600' fill='#111111' text-anchor='start'>Зоны осмотра</text><text x='24' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>1 — передний бампер, фары</text><text x='24' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>2 — капот</text><text x='24' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>3 — лобовое стекло</text><text x='24' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>4 — крыша</text><text x='24' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>5 — заднее стекло</text><text x='24' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>6 — крышка багажника</text><text x='24' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>7 — задний бампер, фонари</text><text x='264' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>8 — левое переднее крыло</text><text x='264' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>9 — левая передняя дверь</text><text x='264' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>10 — левая задняя дверь</text><text x='264' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>11 — левое заднее крыло</text><text x='264' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>12 — правое переднее крыло</text><text x='264' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>13 — правая передняя дверь</text><text x='264' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>14 — правая задняя дверь</text><text x='504' y='524' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>15 — правое заднее крыло</text><text x='504' y='544' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>16 — левое переднее колесо, диск</text><text x='504' y='564' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>17 — правое переднее колесо, диск</text><text x='504' y='584' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>18 — левое заднее колесо, диск</text><text x='504' y='604' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>19 — правое заднее колесо, диск</text><text x='504' y='624' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>20 — левое зеркало</text><text x='504' y='644' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>21 — правое зеркало</text><text x='24' y='680' font-size='13' font-weight='600' fill='#111111' text-anchor='start'>Обозначения повреждений</text><text x='24' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Ц — царапина</text><text x='150' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>С — скол</text><text x='250' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>В — вмятина</text><text x='370' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Т — трещина</text><text x='490' y='704' font-size='12' font-weight='400' fill='#111111' text-anchor='start'>Д — другое (описать в таблице)</text><text x='24' y='728' font-size='11.5' font-weight='400' fill='#666666' text-anchor='start'>Рядом с кодом укажите размер, например «Ц 5 см», и внесите повреждение в таблицу под схемой.</text></svg>";
 const SCHEMA_IMG = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SCHEMA_SVG);
-const PDF_LIB = 'vendor/html2pdf.bundle.min.js?v=6';
+const PDF_LIB = 'vendor/html2pdf.bundle.min.js?v=7';
 
 /* ---------------- icons ---------------- */
 const IC = {
@@ -644,13 +644,13 @@ const rid = () => Math.random().toString(36).slice(2, 10);
 
 /* ---------------- state ---------------- */
 const S = {
-  cars: {}, clients: {}, bookings: {}, payments: {}, tasks: {}, expenses: {}, leases: {}, settings: {},
+  cars: {}, clients: {}, bookings: {}, payments: {}, tasks: {}, expenses: {}, leases: {}, companies: {}, settings: {},
   loaded: new Set(), dbState: 'pending', canWrite: true, meId: null, meName: '',
   db: null, user: null, view: 'today',
   calStart: null, q: { bk: '', cl: '' }, bkFilter: 'active', tkFilter: 'open',
   moneyMonth: null, setDirty: false, setStale: false, people: {}
 };
-const COLLS = ['cars', 'clients', 'bookings', 'payments', 'tasks', 'expenses', 'leases'];
+const COLLS = ['cars', 'clients', 'bookings', 'payments', 'tasks', 'expenses', 'leases', 'companies'];
 const ST = { request: 'Заявка', confirmed: 'Подтверждена', issued: 'Выдана', returned: 'Возвращена', closed: 'Закрыта', cancelled: 'Отменена' };
 const FLOW = ['request', 'confirmed', 'issued', 'returned', 'closed'];
 const ACTIVE = ['request', 'confirmed', 'issued', 'returned'];
@@ -896,7 +896,7 @@ const SB_URL = 'https://fyflffyyaycyptqjgwud.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5ZmxmZnl5YXljeXB0cWpnd3VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNzcyMTYsImV4cCI6MjEwODc1MzIxNn0.FkFzRceX03GmWbNLsg1vdhJOsU3PXBNPyBOO872kFZk';
 const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'bramida-auth' } }) : null;
 const ROLE = { owner: 'Владелец', editor: 'Сотрудник', viewer: 'Только просмотр' };
-const APP_VERSION = '6';
+const APP_VERSION = '7';
 const cleanJSON = o => JSON.parse(JSON.stringify(o ?? {}, (k, v) => v === undefined ? null : v));
 function fail(e) {
   console.error(e);
@@ -1180,7 +1180,7 @@ VIEWS.cars = {
       else stHtml = `<div class="line"><span class="pill p-free">Свободна</span><span style="color:var(--side-ink-2)">${st.next ? `следующая выдача ${relDay(parse(st.next.start))} в ${hm(parse(st.next.start))}` : 'броней впереди нет'}</span></div>`;
       const insRow = (k, label) => { const p = car[k] || {}; const to = parse(p.to); if (!to) return `<div class="ins"><span>${label}</span><span class="faint">нет данных</span><span></span></div>`; const from = parse(p.from) || addDays(to, -365); const left = Math.ceil((to - now) / 864e5); const pct = Math.max(0, Math.min(100, (to - now) / (to - from || 1) * 100)); return `<div class="ins"><span>${label}</span><div class="bar-t ${left < 0 ? 'bad' : left <= 30 ? '' : 'ok'}" style="height:6px"><i style="width:${pct}%"></i></div><b class="num ${left < 0 ? 'bad' : left <= 30 ? 'warn' : ''}" style="font-size:12.5px">${left < 0 ? 'истёк' : 'ещё ' + left + ' дн.'}</b></div>`; };
       return `<button class="car" data-act="open-car" data-id="${car.id}">
-        <div class="car-hero"><div class="top"><div><h3>${esc(carLabel(car))}</h3><div class="sub">${esc([car.year, car.color && car.color.toLowerCase()].filter(Boolean).join(' · '))}</div></div>${plate(car, 'big')}</div><div class="st">${stHtml}</div></div>
+        <div class="car-hero"><div class="top"><div><h3>${esc(carLabel(car))}</h3><div class="sub">${esc([car.year, car.color && car.color.toLowerCase(), companyOf(car) && companyOf(car).name].filter(Boolean).join(' · '))}</div></div>${plate(car, 'big')}</div><div class="st">${stHtml}</div></div>
         <div class="car-body">
           <div class="m"><span>Сутки</span><b>${car.price ? rub(car.price) : '—'}</b></div>
           <div class="m"><span>Выручка, мес.</span><b>${rub(rev)}</b></div>
@@ -1377,6 +1377,67 @@ function payLease(lid, ym) {
   openExpense(null, { category: 'Лизинг', amount: left || num(l.amount) || null, carId: l.carId || '', method: 'Перевод на счёт', note: `Лизинг за ${ymLabel(ym).toLowerCase()}`, leaseId: lid, leaseMonth: ym, date: todayKey() });
 }
 
+/* ---------------- Компании-собственники ---------------- */
+/* One rental can run cars registered to several legal entities: each car points to its company,
+   and the contract takes that company's requisites. Cars without a company use the settings. */
+const ID_LABELS = ['ИНН', 'УНП', 'БИН'];
+const companiesSorted = () => list('companies').sort((a, b) => String(a.name).localeCompare(String(b.name), 'ru'));
+const companyOf = car => (car && car.companyId && S.companies[car.companyId]) || null;
+function lessorOf(b) {
+  const co = companyOf(S.cars[b && b.carId]);
+  if (!co) return { ...S.settings };
+  return { ...S.settings, companyName: co.name || '', companyCountry: co.country || '', idLabel: co.idLabel || 'ИНН', unp: co.unp || '', kpp: co.kpp || '', ogrn: co.ogrn || '',
+    companyAddress: co.address || '', account: co.account || '', bank: co.bank || '', bic: co.bic || '', corr: co.corr || '', companyPhone: co.phone || '',
+    repName: co.repName || '', repShort: co.repShort || '', repBasis: co.repBasis || '' };
+}
+function companiesHtml() {
+  const cos = companiesSorted();
+  const rows = cos.map(co => {
+    const n = list('cars').filter(c => c.companyId === co.id).length;
+    const sub = [co.unp ? `${co.idLabel || 'ИНН'} ${co.unp}` : '', co.repShort].filter(Boolean).join(' · ') || 'реквизиты не заполнены';
+    return `<div class="mini-row link" data-act="open-company" data-id="${esc(co.id)}"><span class="m-ic">${ic('doc', 'sm')}</span><span><b>${esc(co.name || 'Без названия')}</b><span class="sub">${esc(sub)}</span></span><span class="muted" style="font-size:12.5px;white-space:nowrap">${n} ${plural(n, ['машина', 'машины', 'машин'])}</span>${ic('chev', 'sm')}</div>`;
+  }).join('');
+  return `<section class="card" style="margin-bottom:16px"><div class="card-h">${ic('doc')}Компании-собственники <span class="count">${cos.length || ''}</span>${S.canWrite ? `<span class="r"><button class="btn sm" data-act="new-company">${ic('plus', 'sm')}Компания</button></span>` : ''}</div>
+    ${rows ? `<div class="mini">${rows}</div>` : ''}
+    <p class="muted" style="margin:${rows ? '12px' : '0'} 0 0;font-size:13px">Если машины оформлены на разные компании, добавьте каждую и выберите её в карточке машины — в договор попадут реквизиты нужной компании. Машины без выбранной компании берут реквизиты из блока «Арендодатель по умолчанию» ниже.</p></section>`;
+}
+function openCompany(id) {
+  const isNew = !id || !S.companies[id];
+  const co = isNew ? { idLabel: 'ИНН', country: 'Российская Федерация' } : clone(S.companies[id]);
+  const P = 'co';
+  const body = `<section class="box"><form class="grid" id="co-form" onsubmit="return false">
+    ${SEC('Компания', 'doc')}
+    ${F('name', 'Название', co.name, { p: P, span: 2, ph: 'ООО «…» или ИП …' })}${F('country', 'Страна', co.country, { p: P })}
+    ${F('idLabel', 'Тип номера', co.idLabel, { p: P, type: 'select', opts: ID_LABELS.map(x => [x, x]) })}${F('unp', 'Номер', co.unp, { p: P, mono: 1 })}${F('kpp', 'КПП', co.kpp, { p: P, mono: 1, ph: 'если есть' })}
+    ${F('ogrn', 'ОГРН / ОГРНИП', co.ogrn, { p: P, mono: 1, ph: 'если есть' })}${F('address', 'Юридический адрес', co.address, { p: P, span: 2 })}
+    ${SEC('Банк', 'ruble')}
+    ${F('account', 'Расчётный счёт', co.account, { p: P, span: 2, mono: 1 })}${F('bic', 'БИК', co.bic, { p: P, mono: 1 })}
+    ${F('bank', 'Банк', co.bank, { p: P, span: 2 })}${F('corr', 'Корр. счёт', co.corr, { p: P, mono: 1, ph: 'если есть' })}
+    ${SEC('Кто подписывает договор', 'users')}
+    ${F('repName', 'ФИО в родительном падеже', co.repName, { p: P, span: 2, ph: 'Иванова Ивана Ивановича' })}${F('repShort', 'Подпись (Фамилия И. О.)', co.repShort, { p: P })}
+    ${F('repBasis', 'Действует на основании', co.repBasis, { p: P, span: 2, ph: 'Устава / Доверенности от …' })}${F('phone', 'Телефон / мессенджер', co.phone, { p: P })}
+  </form></section>`;
+  const can = S.canWrite;
+  const m = openModal({ title: isNew ? 'Новая компания' : esc(co.name || 'Компания'), sub: 'Реквизиты попадут в договоры по машинам этой компании.', body,
+    foot: `${!isNew && can ? '<button class="btn danger" data-co="delete">Удалить</button>' : ''}<span class="sp"></span>${can ? `<button class="btn primary" data-co="save">${ic('check', 'sm')}${isNew ? 'Добавить' : 'Сохранить'}</button>` : ''}` });
+  m.el.addEventListener('click', async e => {
+    const a = e.target.closest('[data-co]'); if (!a) return;
+    if (a.dataset.co === 'save') {
+      const x = { ...co, ...readForm($('#co-form', m.el)) };
+      if (!x.name) { toast('Укажите название компании', 'bad'); return; }
+      const id2 = id || newId('companies');
+      if (!id) { x.createdAt = new Date().toISOString(); x.createdBy = S.meId || null; }
+      x.updatedAt = new Date().toISOString();
+      if (await put('companies', id2, x)) { S.companies[id2] = x; S.setStale = true; toast(isNew ? 'Компания добавлена' : 'Сохранено'); closeTop(); schedule(); }
+    }
+    if (a.dataset.co === 'delete') {
+      const n = list('cars').filter(c => c.companyId === id).length;
+      if (n) { toast(`На эту компанию оформлено машин: ${n}. Сначала выберите для них другую компанию.`, 'bad'); return; }
+      if (await ask(`Удалить компанию ${co.name}?`) && await del('companies', id)) { delete S.companies[id]; S.setStale = true; closeTop(); toast('Компания удалена'); schedule(); }
+    }
+  });
+}
+
 /* ---------------- Задачи ---------------- */
 VIEWS.tasks = {
   shell: () => `${ph('Задачи', S.canWrite ? `<button class="btn primary" data-act="new-task">${ic('plus', 'sm')}Задача</button>` : '')}<div class="toolbar"><div class="seg">${[['open', 'Открытые'], ['done', 'Выполненные']].map(([k, l]) => `<button class="${S.tkFilter === k ? 'on' : ''}" data-act="tk-filter" data-f="${k}">${l}</button>`).join('')}</div></div><div id="vb"></div>`,
@@ -1398,7 +1459,7 @@ VIEWS.tasks = {
 
 /* ---------------- Настройки ---------------- */
 const SET_FIELDS = [
-  ['Арендодатель', 'doc'],
+  ['Арендодатель по умолчанию', 'doc'],
   ['companyName', 'Название', { span: 2, ph: 'ООО «…»' }], ['companyCountry', 'Страна', { ph: 'Республика Беларусь' }],
   ['unp', 'УНП / ИНН'], ['companyAddress', 'Юридический адрес', { span: 2 }],
   ['account', 'Расчётный счёт', { span: 2, mono: 1 }], ['bic', 'БИК', { mono: 1 }],
@@ -1427,7 +1488,7 @@ VIEWS.settings = {
     const groupsHtml = []; let cur = null;
     SET_FIELDS.forEach(f => { if (f.length === 2 && typeof f[1] === 'string' && !f[2] && /^[А-ЯA-Z]/.test(f[0]) && IC[f[1]]) { cur = { t: f[0], i: f[1], items: [] }; groupsHtml.push(cur); } else cur.items.push(F(f[0], f[1], s[f[0]], { p: 'set', ...(f[2] || {}) })); });
     return `${ph('Настройки', `<button class="btn primary" data-act="save-settings"${S.role === 'owner' ? '' : ' disabled'}>${ic('check', 'sm')}Сохранить</button>`)}
-      <form id="set-form" class="set-grid" onsubmit="return false">${groupsHtml.map(gr => `<section class="card"><div class="card-h">${ic(gr.i)}${esc(gr.t)}</div><div class="grid">${gr.items.join('')}</div></section>`).join('')}</form>
+      ${companiesHtml()}<form id="set-form" class="set-grid" onsubmit="return false">${groupsHtml.map(gr => `<section class="card"><div class="card-h">${ic(gr.i)}${esc(gr.t)}</div><div class="grid">${gr.items.join('')}</div></section>`).join('')}</form>
       ${teamHtml()}${installHtml()}<section class="card" style="margin-top:16px"><div class="card-h">${ic('car')}Прокат и аккаунт</div>${S.role === 'owner' ? `<div class="inline" style="margin-bottom:14px"><div class="fld"><label for="org_name">Название проката</label><input id="org_name" value="${esc(S.org ? S.org.name : '')}" autocomplete="off"></div><button class="btn" data-act="org-rename">Сохранить</button></div>` : ''}<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span class="muted">Вы вошли как <b>${esc(S.meId || '')}</b> · ${esc(ROLE[S.role] || '')}</span><span style="flex:1"></span>${(S.orgs || []).length > 1 ? `<button class="btn" data-act="switch-org">${ic('car', 'sm')}Сменить прокат</button>` : ''}<button class="btn" data-act="logout">${ic('logout', 'sm')}Выйти</button></div><p class="faint" style="margin:12px 0 0;font-size:12px">Версия приложения: ${APP_VERSION}</p></section><div id="vb"></div>`;
   },
   body: () => ''
@@ -1739,6 +1800,7 @@ function openCar(id) {
   const os = c.osago || {}, ks = c.kasko || {}, P = 'car';
   const body = `<div id="car-sum"></div><section class="box"><form class="grid" id="car-form" onsubmit="return false">
     ${SEC('Машина', 'car')}
+    ${list('companies').length ? F('companyId', 'Собственник — чьи реквизиты в договоре', c.companyId, { p: P, type: 'select', span: 3, opts: [['', '— из «Настроек» (по умолчанию) —'], ...companiesSorted().map(co => [co.id, co.name || 'Без названия'])] }) : ''}
     ${F('brand', 'Марка', c.brand, { p: P, ph: 'Xiaomi' })}${F('model', 'Модель', c.model, { p: P, ph: 'SU7' })}${F('modification', 'Модификация', c.modification, { p: P, ph: 'MAX' })}
     ${F('plate', 'Госномер', c.plate, { p: P, mono: 1 })}${F('year', 'Год выпуска', c.year, { p: P, type: 'num' })}${F('color', 'Цвет', c.color, { p: P })}
     ${F('vin', 'VIN', c.vin, { p: P, span: 2, mono: 1 })}${F('type', 'Тип ТС', c.type, { p: P })}
@@ -1858,7 +1920,7 @@ function openTask(id, preset = {}) {
 
 /* ---------------- contract ---------------- */
 function contractHTML(b) {
-  const s = S.settings, c = S.clients[b.clientId] || {}, car = S.cars[b.carId] || {};
+  const s = lessorOf(b), c = S.clients[b.clientId] || {}, car = S.cars[b.carId] || {};
   const pp = c.passport || {}, lc = c.license || {}, os = car.osago || {}, ks = car.kasko || {};
   const B = (v, n = '___') => (v === null || v === undefined || v === '') ? n : esc(v);
   const N = (v, n = '___') => num(v) === null ? n : groups(v);
@@ -1879,7 +1941,7 @@ function contractHTML(b) {
 <h1>ДОГОВОР АРЕНДЫ</h1>
 <div class="c-sub">транспортного средства без экипажа № ${B(b.no, '_____')}</div>
 <div class="c-place"><span>${B(s.city, 'г. ________________')}</span><span>${ruDate(b.contractDate)}</span></div>
-<p><b>${B(s.companyName, '________________')}</b>${s.companyCountry || s.unp ? ` (${[s.companyCountry, s.unp ? 'УНП ' + s.unp : ''].filter(Boolean).map(esc).join(', ')})` : ''}, именуемое в дальнейшем «Арендодатель», в лице ${B(s.repName, '__________________________')}, действующего на основании ${B(s.repBasis, '________________')}, с одной стороны, и</p>
+<p><b>${B(s.companyName, '________________')}</b>${s.companyCountry || s.unp ? ` (${[s.companyCountry, s.unp ? (s.idLabel || 'УНП') + ' ' + s.unp : '', s.kpp ? 'КПП ' + s.kpp : '', s.ogrn ? 'ОГРН ' + s.ogrn : ''].filter(Boolean).map(esc).join(', ')})` : ''}, именуемое в дальнейшем «Арендодатель», в лице ${B(s.repName, '__________________________')}, действующего на основании ${B(s.repBasis, '________________')}, с одной стороны, и</p>
 <p>${lessee}</p>
 <p>вместе именуемые «Стороны», заключили настоящий договор о нижеследующем.</p>
 <h2>1. Предмет договора</h2>
@@ -1950,9 +2012,9 @@ function contractHTML(b) {
 <table class="t-req"><tr><th>Арендодатель</th><th>Арендатор</th></tr>
 <tr><td><b>${B(s.companyName, '________________')}</b></td><td>ФИО: ${B(c.name, '________________________')}</td></tr>
 <tr><td>Адрес: ${B(s.companyAddress, '________________')}</td><td>Дата рождения: ${c.birthDate ? fmtD(c.birthDate) : '____________'}${c.birthPlace ? ', место рождения: ' + esc(c.birthPlace) : ''}</td></tr>
-<tr><td>${s.unp ? 'УНП: ' + esc(s.unp) : 'УНП: ________'}</td><td>Паспорт: серия ${B(pp.series, '______')} № ${B(pp.number, '__________')}, выдан ${B(pp.issuedBy, '__________________')}${pp.issuedAt ? ' ' + fmtD(pp.issuedAt) : ''}${pp.code ? ', код подразделения ' + esc(pp.code) : ''}</td></tr>
+<tr><td>${esc(s.idLabel || 'УНП')}: ${s.unp ? esc(s.unp) : '________'}${s.kpp ? ', КПП ' + esc(s.kpp) : ''}${s.ogrn ? '<br>ОГРН: ' + esc(s.ogrn) : ''}</td><td>Паспорт: серия ${B(pp.series, '______')} № ${B(pp.number, '__________')}, выдан ${B(pp.issuedBy, '__________________')}${pp.issuedAt ? ' ' + fmtD(pp.issuedAt) : ''}${pp.code ? ', код подразделения ' + esc(pp.code) : ''}</td></tr>
 <tr><td>Текущий (расчётный) счёт: ${B(s.account, '________________')}</td><td>Адрес регистрации: ${B(c.address, '____________________')}</td></tr>
-<tr><td>Банк: ${B(s.bank, '________________')}${s.bic ? ', БИК ' + esc(s.bic) : ''}</td><td>Водительское удостоверение: № ${B(lc.number, '__________')}${lc.issuedAt ? ', выдано ' + fmtD(lc.issuedAt) : ''}${lc.issuedBy ? ' ' + esc(lc.issuedBy) : ''}${lc.validTo ? ', действительно до ' + fmtD(lc.validTo) : ''}${lc.categories ? '; категории ' + esc(lc.categories) : ''}${lc.bSince ? '; стаж категории B с ' + fmtD(lc.bSince) : ''}</td></tr>
+<tr><td>Банк: ${B(s.bank, '________________')}${s.bic ? ', БИК ' + esc(s.bic) : ''}${s.corr ? ', к/с ' + esc(s.corr) : ''}</td><td>Водительское удостоверение: № ${B(lc.number, '__________')}${lc.issuedAt ? ', выдано ' + fmtD(lc.issuedAt) : ''}${lc.issuedBy ? ' ' + esc(lc.issuedBy) : ''}${lc.validTo ? ', действительно до ' + fmtD(lc.validTo) : ''}${lc.categories ? '; категории ' + esc(lc.categories) : ''}${lc.bSince ? '; стаж категории B с ' + fmtD(lc.bSince) : ''}</td></tr>
 <tr><td>Телефон / мессенджер: ${B(s.companyPhone, '______________')}</td><td>Телефон / мессенджер: ${B([c.phone, c.messenger].filter(Boolean).join(', '), '______________')}</td></tr>
 <tr class="sig"><td>____________ / ${repShort} / М.П.</td><td>____________ / ${sigName} /</td></tr></table></div>
 <div class="appendix">
@@ -1990,7 +2052,7 @@ function openContract(b) {
   const c = S.clients[b.clientId], car = S.cars[b.carId];
   if (!c) missing.push('клиент'); else { if (!c.passport || !c.passport.number) missing.push('паспорт клиента'); if (!c.license || !c.license.number) missing.push('права клиента'); }
   if (!car) missing.push('машина');
-  if (!S.settings.companyName) missing.push('реквизиты в «Настройках»');
+  if (!lessorOf(b).companyName) missing.push(companyOf(car) ? 'реквизиты компании-собственника' : 'реквизиты в «Настройках»');
   const m = openModal({ title: `Договор №${esc(b.no || '—')}`, sub: missing.length ? `<span class="warn">Не заполнено: ${esc(missing.join(', '))} — в договоре останутся пропуски.</span>` : 'Договор и акт собраны из брони, клиента, машины и настроек.', size: 'wide',
     body: `<div class="paper-wrap"><div class="paper contract">${contractHTML(b)}</div></div>`,
     foot: `<span class="muted" style="font-size:12.5px">Пропуски «___» заполняются от руки при подписании.</span><span class="sp"></span><button class="btn" data-ct="html">Скачать HTML</button><button class="btn primary" data-ct="pdf">Скачать PDF</button>` });
@@ -2107,6 +2169,8 @@ const ACT = {
   'open-task': el => openTask(el.dataset.id),
   'new-lease': () => S.canWrite && openLease(null),
   'open-lease': el => openLease(el.dataset.id),
+  'new-company': () => S.canWrite && openCompany(null),
+  'open-company': el => openCompany(el.dataset.id),
   'lease-pay': el => S.canWrite && payLease(el.dataset.id, el.dataset.ym),
   'lease-go': () => { S.view = 'leasing'; try { history.replaceState(null, '', '#leasing'); } catch (e) {} renderView(true); window.scrollTo(0, 0); },
   'new-expense': () => S.canWrite && openExpense(null),
@@ -2207,6 +2271,7 @@ function applyRow(ev) {
   const del = ev.eventType === 'DELETE', r = del ? ev.old : ev.new;
   if (!r || !r.coll || !S.org || r.org_id !== S.org.id) return;
   if (r.coll === 'settings') { if (r.id === 'main') { S.settings = del ? {} : (r.data || {}); S.setStale = true; } }
+  if (r.coll === 'companies') S.setStale = true;
   else if (S[r.coll]) { if (del) delete S[r.coll][r.id]; else S[r.coll][r.id] = r.data || {}; }
   schedule();
 }
