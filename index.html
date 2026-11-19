@@ -836,6 +836,96 @@ function buildAlerts() {
   return A.sort((a, b) => a.sev - b.sev || a.at - b.at);
 }
 
+/* Day-before rental reminder. Confirmed bookings, and issued ones while the car is still out.
+   Only the local calendar day before start. Not requests, returns, cancellations or closed bookings,
+   and not once the start day has arrived. Amounts come from money(). */
+function rentReminders(now) {
+  const tomorrow = isoD(addDays(sod(now || new Date()), 1));
+  return list('bookings').filter(b => {
+    if (b.status !== 'confirmed' && b.status !== 'issued') return false;
+    const s = parse(b.start);
+    return !!(s && isoD(s) === tomorrow);
+  }).sort((a, b) => String(a.start).localeCompare(String(b.start)) || String(a.no || '').localeCompare(String(b.no || ''), 'ru'));
+}
+function rentReminderCopy(b) {
+  const c = S.clients[b.clientId], car = S.cars[b.carId], m = money(b);
+  const name = (c && String(c.name || '').trim()) || 'Клиент не выбран';
+  const carTxt = car ? [car.plate, carLabel(car)].filter(Boolean).join(', ') : 'Машина удалена';
+  const left = m.due > 0 ? 'осталось ' + rub(m.due) : m.due < 0 ? 'переплата ' + rub(-m.due) : 'остаток ' + rub(0);
+  return {
+    title: 'Завтра аренда №' + (b.no || '—'),
+    body: name + '. ' + carTxt + '. ' + fmtDT(b.start) + ' → ' + fmtDT(b.end) + '. Оплачено ' + rub(m.paid) + ', ' + left + '.'
+  };
+}
+function rentRemindersHtml() {
+  const rs = rentReminders();
+  if (!rs.length) return '';
+  const rows = rs.map(b => {
+    const t = rentReminderCopy(b);
+    return `<button class="td sev2" data-act="open-booking" data-id="${esc(b.id)}"><span class="t-ic">${ic('clock')}</span><span><b>${esc(t.title)}</b><span class="sub">${esc(t.body)}</span></span><span class="go">${ic('chev', 'sm')}</span></button>`;
+  }).join('');
+  return `<section class="card" id="rent-reminders" style="margin-bottom:16px"><div class="card-h">${ic('clock')}Напоминание <span class="count">${rs.length}</span></div><div class="todo">${rows}</div></section>`;
+}
+const RENT_ASKED = 'bramida-rent-asked';
+const RENT_SENT = 'bramida-rent-sent';
+const rentNoteSent = new Set();
+let rentNotifyArmed = false;
+function showRentNotifications(rs) {
+  if (!('Notification' in window) || Notification.permission !== 'granted' || !rs.length) return;
+  const day = todayKey(), org = (S.org && S.org.id) || '';
+  let saved = {};
+  try { saved = JSON.parse(lsGet(RENT_SENT) || '{}'); } catch (e) { saved = {}; }
+  if (!saved || saved.day !== day || !saved.keys) saved = { day, keys: {} };
+  rs.forEach(b => {
+    const key = org + ':' + b.id;
+    if (saved.keys[key] || rentNoteSent.has(day + ':' + key)) return;
+    rentNoteSent.add(day + ':' + key);
+    saved.keys[key] = 1;
+    deliverRentNote(b, 'rent-' + day + '-' + key);
+  });
+  lsSet(RENT_SENT, JSON.stringify(saved));
+}
+function deliverRentNote(b, tag) {
+  const t = rentReminderCopy(b);
+  const opts = { body: t.body, lang: 'ru', tag, icon: new URL('icons/icon-192.png', location.href).href, data: { bookingId: b.id } };
+  const pageNote = () => {
+    try {
+      const n = new Notification(t.title, opts);
+      n.onclick = () => { try { window.focus(); } catch (e) {} if (S.bookings[b.id]) openBooking(b.id); n.close(); };
+    } catch (e) { /* in-app card stays either way */ }
+  };
+  const sw = navigator.serviceWorker;
+  if (sw && sw.controller && sw.ready) sw.ready.then(reg => reg.showNotification ? reg.showNotification(t.title, opts) : pageNote()).catch(pageNote);
+  else pageNote();
+}
+function askRentNotify() {
+  if (!('Notification' in window) || Notification.permission !== 'default') return;
+  if (lsGet(RENT_ASKED) === '1') return;
+  if (S.dbState !== 'ok' || !rentReminders().length) return;
+  lsSet(RENT_ASKED, '1');
+  let pending;
+  try { pending = Notification.requestPermission(); }
+  catch (e) { return; }
+  Promise.resolve(pending).then(p => { if (p === 'granted') showRentNotifications(rentReminders()); }).catch(() => {});
+}
+function armRentNotify() {
+  if (rentNotifyArmed) return;
+  rentNotifyArmed = true;
+  const once = () => {
+    document.removeEventListener('pointerdown', once, true);
+    rentNotifyArmed = false;
+    askRentNotify();
+  };
+  document.addEventListener('pointerdown', once, true);
+}
+function syncRentReminders() {
+  if (S.dbState !== 'ok' || !('Notification' in window)) return;
+  const rs = rentReminders();
+  if (!rs.length) return;
+  if (Notification.permission === 'granted') { showRentNotifications(rs); return; }
+  if (Notification.permission === 'default' && lsGet(RENT_ASKED) !== '1') armRentNotify();
+}
+
 /* ---------------- fields ---------------- */
 function F(k, label, val, o = {}) {
   const id = (o.p || 'f') + '_' + k.replace(/[^\w]/g, '_');
@@ -896,7 +986,7 @@ const SB_URL = 'https://fyflffyyaycyptqjgwud.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5ZmxmZnl5YXljeXB0cWpnd3VkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNzcyMTYsImV4cCI6MjEwODc1MzIxNn0.FkFzRceX03GmWbNLsg1vdhJOsU3PXBNPyBOO872kFZk';
 const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'bramida-auth' } }) : null;
 const ROLE = { owner: 'Владелец', editor: 'Сотрудник', viewer: 'Только просмотр' };
-const APP_VERSION = '8';
+const APP_VERSION = '9';
 const cleanJSON = o => JSON.parse(JSON.stringify(o ?? {}, (k, v) => v === undefined ? null : v));
 function fail(e) {
   console.error(e);
@@ -1087,7 +1177,7 @@ VIEWS.today = {
     const todo = a => `<button class="td sev${a.sev}" data-act="${a.act}" data-id="${esc(a.id)}"><span class="t-ic">${ic(TAG_IC[a.tag] || 'alert')}</span><span><b>${esc(a.title)}</b><span class="sub">${esc(a.sub)}</span></span><span class="go">${ic('chev', 'sm')}</span></button>`;
     const up = b => { const c = S.clients[b.clientId], car = S.cars[b.carId], s = parse(b.start), m = money(b);
       return `<div class="row up-row"><span class="r-main">${avatar(c && c.name, 'sm')}<span><b>${esc(shortName(c && c.name) || 'Клиент не выбран')}</b><span class="sub">${relDay(s)} в ${hm(s)} · ${bkDays(b)} ${plural(bkDays(b), ['сутки', 'суток', 'суток'])} · ${esc(car ? car.plate : '')}${m.due > 0 ? ` · ждём ${rub(m.due)}` : ''}</span></span></span><span class="up-act"><button class="btn sm ghost" data-act="open-booking" data-id="${b.id}">Открыть</button>${S.canWrite && b.status === 'confirmed' ? `<button class="btn sm dark" data-act="quick" data-id="${b.id}" data-st="issued">Выдать</button>` : S.canWrite && b.status === 'request' ? `<button class="btn sm" data-act="quick" data-id="${b.id}" data-st="confirmed">Подтвердить</button>` : ''}</span></div>`; };
-    return hello + installBanner() + `<div class="kpis">
+    return hello + installBanner() + rentRemindersHtml() + `<div class="kpis">
         ${kpi('car', 'Автопарк', `${out.length} из ${cars.length}`, `в аренде · ${cars.length - out.length} ${plural(cars.length - out.length, ['свободна', 'свободны', 'свободно'])}`, `<div class="ring">${ring(out.length, cars.length)}<span class="k-s">${cars.length ? Math.round(out.length / cars.length * 100) : 0} % загрузка</span></div>`, 'hero')}
         ${kpi('trend', `Выручка в ${MONTHS_P[now.getMonth()]}`, rub(rev), 'последние 14 дней', spark(14))}
         ${kpi('wallet', 'Прибыль за месяц', `<span class="${rev - ex < 0 ? 'bad' : ''}">${rub(rev - ex)}</span>`, `расходы ${rub(ex)}`)}
@@ -1555,6 +1645,7 @@ function schedule() {
     else renderView();
     renderBadges();
     modals.forEach(m => m.refresh && m.refresh());
+    syncRentReminders();
   });
 }
 async function resolvePeople() { /* names come from the team table */ }
@@ -2437,7 +2528,18 @@ async function boot() {
   if (!session) { showAuth('in'); return; }
   startApp(session);
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.dbState === 'ok' && Date.now() - (S.lastLoad || 0) > 20000) loadAll().catch(() => {}); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || S.dbState !== 'ok') return;
+  schedule();
+  if (Date.now() - (S.lastLoad || 0) > 20000) loadAll().catch(() => {});
+});
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', ev => {
+    const d = ev.data;
+    if (!d || d.type !== 'rent-reminder' || !d.bookingId || !S.bookings[d.bookingId]) return;
+    openBooking(d.bookingId);
+  });
+}
 window.addEventListener('online', () => { if (S.dbState === 'ok') loadAll().catch(() => {}); });
 setInterval(() => { if (S.dbState === 'ok' && !modals.length && ['today', 'calendar', 'cars'].includes(S.view)) schedule(); }, 60000);
 boot();

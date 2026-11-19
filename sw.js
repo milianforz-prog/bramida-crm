@@ -1,5 +1,5 @@
 // Bramida CRM service worker: app shell offline, data always from the network.
-const V = 'bramida-v8';
+const V = 'bramida-v9';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'vendor/supabase.js?v=8', 'fonts/fonts.css?v=8', 'icons/icon-192.png', 'icons/favicon-32.png', 'icons/apple-touch-icon.png', 'fonts/jetbrains-mono-cyrillic-500-normal.woff2', 'fonts/jetbrains-mono-cyrillic-600-normal.woff2', 'fonts/jetbrains-mono-latin-500-normal.woff2', 'fonts/jetbrains-mono-latin-600-normal.woff2', 'fonts/jetbrains-mono-latin-ext-500-normal.woff2', 'fonts/jetbrains-mono-latin-ext-600-normal.woff2', 'fonts/onest-cyrillic-400-normal.woff2', 'fonts/onest-cyrillic-500-normal.woff2', 'fonts/onest-cyrillic-600-normal.woff2', 'fonts/onest-cyrillic-700-normal.woff2', 'fonts/onest-latin-400-normal.woff2', 'fonts/onest-latin-500-normal.woff2', 'fonts/onest-latin-600-normal.woff2', 'fonts/onest-latin-700-normal.woff2', 'fonts/onest-latin-ext-400-normal.woff2', 'fonts/onest-latin-ext-500-normal.woff2', 'fonts/onest-latin-ext-600-normal.woff2', 'fonts/onest-latin-ext-700-normal.woff2', 'fonts/pt-serif-cyrillic-400-normal.woff2', 'fonts/pt-serif-cyrillic-700-normal.woff2', 'fonts/pt-serif-latin-400-normal.woff2', 'fonts/pt-serif-latin-700-normal.woff2', 'fonts/pt-serif-latin-ext-400-normal.woff2', 'fonts/pt-serif-latin-ext-700-normal.woff2', 'fonts/unbounded-cyrillic-500-normal.woff2', 'fonts/unbounded-cyrillic-600-normal.woff2', 'fonts/unbounded-cyrillic-700-normal.woff2', 'fonts/unbounded-latin-500-normal.woff2', 'fonts/unbounded-latin-600-normal.woff2', 'fonts/unbounded-latin-700-normal.woff2', 'fonts/unbounded-latin-ext-500-normal.woff2', 'fonts/unbounded-latin-ext-600-normal.woff2', 'fonts/unbounded-latin-ext-700-normal.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
@@ -11,4 +11,14 @@ self.addEventListener('fetch', e => {
     return;
   }
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => { if (r.ok) { const c = r.clone(); caches.open(V).then(ca => ca.put(req, c)); } return r; })));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const id = e.notification.data && e.notification.data.bookingId;
+  e.waitUntil((async () => {
+    const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const client = all.find(c => c.url && c.url.indexOf(self.registration.scope) === 0) || all[0];
+    if (client) { await client.focus(); if (id) client.postMessage({ type: 'rent-reminder', bookingId: id }); return; }
+    if (self.clients.openWindow) await self.clients.openWindow('./');
+  })());
 });
